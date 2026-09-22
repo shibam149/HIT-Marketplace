@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HIT Marketplace Admin</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f7fb;
+      margin: 0;
+    }
+
+    header {
+      background: #123b6d;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 30px auto;
+      padding: 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 10px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    }
+
+    button {
+      padding: 10px 18px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+
+    .approve {
+      background: green;
+      color: white;
+    }
+
+    .reject {
+      background: red;
+      color: white;
+    }
+
+    .refresh {
+      background: #123b6d;
+      color: white;
+    }
+
+    #error {
+      color: red;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h1>HIT Marketplace — Admin</h1>
+</header>
+
+<div class="container">
+
+  <button class="refresh" onclick="loadStudents()">Refresh</button>
+
+  <h2>Pending Student Verification</h2>
+
+  <p id="status">Loading students...</p>
+
+  <div id="students"></div>
+
+  <p id="error"></p>
+
+</div>
+
+<script>
+
+const SUPABASE_URL =
+  "https://ziyyqhnmhbwomibpsenf.supabase.co";
+
+const SUPABASE_KEY =
+  "sb_publishable_i25Oy3Rbnzr3S45H4KzQyg_dLeEd3YH";
+
+const client =
+  supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
+
+
+async function loadStudents() {
+
+  document.getElementById("status").textContent =
+    "Checking admin account...";
+
+  document.getElementById("error").textContent = "";
+
+  const {
+    data: { user },
+    error: userError
+  } = await client.auth.getUser();
+
+
+  if (userError) {
+
+    document.getElementById("error").textContent =
+      "User error:\n" + userError.message;
+
+    return;
+  }
+
+
+  if (!user) {
+
+    document.getElementById("error").textContent =
+      "You are not logged in.";
+
+    return;
+  }
+
+
+  document.getElementById("status").textContent =
+    "Logged in. Checking admin...";
+
+
+  const {
+    data: admin,
+    error: adminError
+  } = await client
+    .from("admins")
+    .select("id")
+    .eq("id", user.id)
+    .maybeSingle();
+
+
+  if (adminError) {
+
+    document.getElementById("error").textContent =
+      "Admin check error:\n" +
+      adminError.message;
+
+    return;
+  }
+
+
+  if (!admin) {
+
+    document.getElementById("error").textContent =
+      "This account is NOT registered as admin.";
+
+    return;
+  }
+
+
+  document.getElementById("status").textContent =
+    "Admin verified. Loading students...";
+
+
+  const {
+    data: students,
+    error: studentError
+  } = await client
+    .from("profiles")
+    .select("*")
+    .eq("verification_status", "PENDING");
+
+
+  if (studentError) {
+
+    document.getElementById("error").textContent =
+      "Student loading error:\n" +
+      studentError.message;
+
+    return;
+  }
+
+
+  document.getElementById("status").textContent =
+    students.length +
+    " pending student(s) found.";
+
+
+  const studentsDiv =
+    document.getElementById("students");
+
+  studentsDiv.innerHTML = "";
+
+
+  if (students.length === 0) {
+
+    studentsDiv.innerHTML =
+      "<div class='card'>No pending students.</div>";
+
+    return;
+  }
+
+
+  students.forEach(student => {
+
+    const card =
+      document.createElement("div");
+
+    card.className = "card";
+
+    card.innerHTML = `
+
+      <h2>${student.full_name || "No Name"}</h2>
+
+      <p>
+        <strong>Student ID:</strong>
+        ${student.student_id || "-"}
+      </p>
+
+      <p>
+        <strong>Department:</strong>
+        ${student.department || "-"}
+      </p>
+
+      <p>
+        <strong>Year:</strong>
+        ${student.year || "-"}
+      </p>
+
+      <p>
+        <strong>Phone:</strong>
+        ${student.phone || "-"}
+      </p>
+
+      <p>
+        <strong>College Email:</strong>
+        ${student.college_email || "-"}
+      </p>
+
+      <p>
+        <strong>Status:</strong>
+        ${student.verification_status}
+      </p>
+
+      <button
+        class="approve"
+        onclick="changeStatus('${student.id}', 'VERIFIED')">
+        Approve
+      </button>
+
+      <button
+        class="reject"
+        onclick="changeStatus('${student.id}', 'REJECTED')">
+        Reject
+      </button>
+
+    `;
+
+    studentsDiv.appendChild(card);
+
+  });
+
+}
+
+
+async function changeStatus(id, status) {
+
+  const { error } =
+    await client
+      .from("profiles")
+      .update({
+        verification_status: status
+      })
+      .eq("id", id);
+
+
+  if (error) {
+
+    alert(
+      "Error: " + error.message
+    );
+
+    return;
+  }
+
+
+  alert(
+    status === "VERIFIED"
+      ? "Student Approved!"
+      : "Student Rejected!"
+  );
+
+
+  loadStudents();
+
+}
+
+
+loadStudents();
+
+</script>
+
+</body>
+</html>

@@ -1,17 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
-
-    <title>Verification | HIT Marketplace</title>
+    <title>Verification Pending | HIT Marketplace</title>
 
     <style>
-
         * {
             margin: 0;
             padding: 0;
@@ -21,12 +16,7 @@
 
         body {
             min-height: 100vh;
-            background: linear-gradient(
-                135deg,
-                #071d3b,
-                #0b376f
-            );
-
+            background: linear-gradient(135deg, #071d3b, #0b376f);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -44,20 +34,15 @@
         }
 
         .icon {
-            width: 85px;
-            height: 85px;
+            width: 80px;
+            height: 80px;
             margin: 0 auto 25px;
-
-            background: #fff7d6;
-            color: #d39f00;
-
             border-radius: 50%;
-
+            background: #fff7d6;
             display: flex;
             align-items: center;
             justify-content: center;
-
-            font-size: 38px;
+            font-size: 40px;
         }
 
         h1 {
@@ -66,247 +51,139 @@
             margin-bottom: 12px;
         }
 
-        .description {
+        .subtitle {
             color: #64748b;
-            line-height: 1.7;
-            font-size: 15px;
+            line-height: 1.6;
             margin-bottom: 30px;
         }
 
         .status {
-            background: #fff8df;
-            border: 1px solid #f3df8c;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 25px;
-        }
-
-        .status strong {
-            display: block;
-            color: #9a7400;
-            font-size: 18px;
-            margin-bottom: 6px;
-        }
-
-        .status span {
-            color: #7c6a32;
+            display: inline-block;
+            padding: 8px 18px;
+            border-radius: 20px;
+            background: #fff7d6;
+            color: #8a6500;
+            font-weight: 700;
             font-size: 13px;
+            margin-bottom: 30px;
         }
 
         .steps {
             text-align: left;
-            margin: 25px 0;
+            margin: 20px 0 30px;
         }
 
         .step {
             display: flex;
             gap: 15px;
-            margin: 18px 0;
+            padding: 15px;
+            border-bottom: 1px solid #e5e7eb;
         }
 
-        .number {
-            min-width: 34px;
-            height: 34px;
-
-            background: #0b376f;
-            color: white;
-
-            border-radius: 50%;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            font-size: 13px;
-            font-weight: bold;
+        .step-icon {
+            font-size: 20px;
         }
 
-        .step h3 {
-            color: #1e293b;
-            font-size: 15px;
-            margin-bottom: 3px;
+        .step strong {
+            color: #334155;
         }
 
         .step p {
             color: #64748b;
             font-size: 13px;
-            line-height: 1.5;
+            margin-top: 4px;
         }
 
-        .login-btn {
+        .button {
+            display: inline-block;
             width: 100%;
             padding: 14px;
-
             background: #0b376f;
             color: white;
-
-            border: none;
+            text-decoration: none;
             border-radius: 7px;
-
-            font-size: 15px;
             font-weight: 700;
+            margin-top: 10px;
+        }
 
-            cursor: pointer;
+        .button:hover {
+            background: #082d5b;
         }
 
         .home {
             display: block;
-            margin-top: 18px;
-
+            margin-top: 15px;
             color: #64748b;
             text-decoration: none;
             font-size: 13px;
         }
 
-        @media(max-width: 550px) {
-
-            .card {
-                padding: 35px 25px;
-            }
-
-            h1 {
-                font-size: 27px;
-            }
-
+        .home:hover {
+            color: #0b376f;
         }
-
     </style>
-
 </head>
-
 
 <body>
 
-
     <div class="card">
-
 
         <div class="icon">
             ⏳
         </div>
 
+        <h1>Verification Pending</h1>
 
-        <h1>
-            Verification Pending
-        </h1>
-
-
-        <p class="description">
-
-            Thank you for registering with
-            <strong>HIT Marketplace</strong>.
-
-            Your student verification request has
-            been successfully submitted.
-
+        <p class="subtitle">
+            Your HIT student account has been successfully created.
+            Our administrator needs to verify your student ID before
+            you can access the marketplace.
         </p>
 
-
         <div class="status">
-
-            <strong>
-                🟡 PENDING
-            </strong>
-
-            <span>
-                Your account is waiting for verification.
-            </span>
-
+            STATUS: PENDING
         </div>
-
 
         <div class="steps">
 
-
             <div class="step">
-
-                <div class="number">
-                    1
-                </div>
+                <div class="step-icon">✅</div>
 
                 <div>
-
-                    <h3>
-                        Student Information Submitted
-                    </h3>
-
-                    <p>
-                        Your registration details have been received.
-                    </p>
-
+                    <strong>Student Information Submitted</strong>
+                    <p>Your registration information has been received.</p>
                 </div>
-
             </div>
-
 
             <div class="step">
-
-                <div class="number">
-                    2
-                </div>
+                <div class="step-icon">🔍</div>
 
                 <div>
-
-                    <h3>
-                        Student ID Review
-                    </h3>
-
-                    <p>
-                        An administrator will verify your HIT
-                        student identity.
-                    </p>
-
+                    <strong>Student ID Review</strong>
+                    <p>Your uploaded HIT Student ID is waiting for review.</p>
                 </div>
-
             </div>
-
 
             <div class="step">
-
-                <div class="number">
-                    3
-                </div>
+                <div class="step-icon">🔓</div>
 
                 <div>
-
-                    <h3>
-                        Account Activated
-                    </h3>
-
-                    <p>
-                        Once approved, you can log in and
-                        access marketplace features.
-                    </p>
-
+                    <strong>Account Activation</strong>
+                    <p>After verification, your marketplace access will be activated.</p>
                 </div>
-
             </div>
-
 
         </div>
 
-
-        <button
-            class="login-btn"
-            onclick="window.location.href='login.html'">
-
+        <a href="login.html" class="button">
             Go to Login
-
-        </button>
-
-
-        <a
-            href="index.html"
-            class="home">
-
-            ← Back to Homepage
-
         </a>
 
+        <a href="index.html" class="home">
+            ← Back to Homepage
+        </a>
 
     </div>
 
-
 </body>
-
 </html>

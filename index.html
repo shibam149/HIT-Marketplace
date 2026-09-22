@@ -881,21 +881,11 @@
 
         <div class="nav-actions">
 
-            <button
-                class="login-btn"
-                onclick="goToLogin()">
+            <button id="loginBtn" class="login-btn" onclick="goToLogin()">Login</button>
 
-                Login
+            <button id="registerBtn" class="register-btn" onclick="goToRegister()">Register</button>
 
-            </button>
-
-            <button
-                class="register-btn"
-                onclick="goToRegister()">
-
-                Register
-
-            </button>
+            <button id="logoutBtn" class="login-btn" onclick="logout()" style="display:none;">Logout</button>
 
         </div>
 
@@ -1744,23 +1734,70 @@
          JAVASCRIPT
     ========================= -->
 
-    <script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = "https://ziyyqhnmhbwomibpsenf.supabase.co";
+const SUPABASE_KEY = "sb_publishable_i25Oy3Rbnzr3S45H4KzQyg_dLeEd3YH";
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        function goToLogin() {
+async function protectMarketplace() {
+    const { data: { session }, error } = await supabaseClient.auth.getSession();
 
-            window.location.href = "login.html";
+    if (error || !session) {
+        window.location.replace("login.html");
+        return;
+    }
 
-        }
+    const { data: profile, error: profileError } = await supabaseClient
+        .from("profiles")
+        .select("verification_status")
+        .eq("id", session.user.id)
+        .single();
 
+    if (profileError || !profile) {
+        await supabaseClient.auth.signOut();
+        window.location.replace("login.html");
+        return;
+    }
 
-        function goToRegister() {
+    if (profile.verification_status === "PENDING") {
+        window.location.replace("verify.html");
+        return;
+    }
 
-            window.location.href = "register.html";
+    if (profile.verification_status === "REJECTED") {
+        await supabaseClient.auth.signOut();
+        alert("Your account verification was rejected.");
+        window.location.replace("login.html");
+        return;
+    }
 
-        }
+    if (profile.verification_status !== "VERIFIED") {
+        await supabaseClient.auth.signOut();
+        window.location.replace("login.html");
+        return;
+    }
 
-    </script>
+    document.getElementById("loginBtn").style.display = "none";
+    document.getElementById("registerBtn").style.display = "none";
+    document.getElementById("logoutBtn").style.display = "inline-block";
+}
 
+async function logout() {
+    const { error } = await supabaseClient.auth.signOut();
+    if (error) {
+        console.error("Logout error:", error);
+        alert("Logout failed. Please try again.");
+        return;
+    }
+    window.location.replace("login.html");
+}
+
+function goToLogin() { window.location.href = "login.html"; }
+function goToRegister() { window.location.href = "register.html"; }
+
+protectMarketplace();
+</script>
 
 </body>
 

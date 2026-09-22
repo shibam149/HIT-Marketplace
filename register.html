@@ -352,7 +352,7 @@
                         </label>
 
                         <input
-                            type="text"
+                            id="fullName" name="fullName" type="text"
                             placeholder="Enter your full name"
                             required>
 
@@ -368,7 +368,7 @@
                         </label>
 
                         <input
-                            type="text"
+                            id="studentId" name="studentId" type="text"
                             placeholder="Enter your roll number"
                             required>
 
@@ -383,7 +383,7 @@
                             Department *
                         </label>
 
-                        <select required>
+                        <select id="department" name="department" required>
 
                             <option value="">
                                 Select Department
@@ -430,7 +430,7 @@
                             Year *
                         </label>
 
-                        <select required>
+                        <select id="year" name="year" required>
 
                             <option value="">
                                 Select Year
@@ -466,7 +466,7 @@
                         </label>
 
                         <input
-                            type="tel"
+                            id="phone" name="phone" type="tel"
                             placeholder="Enter phone number"
                             required>
 
@@ -482,9 +482,23 @@
                         </label>
 
                         <input
-                            type="email"
+                            id="email" name="email" type="email"
                             placeholder="Enter your email"
                             required>
+
+                         <div class="id-note">
+                             Email used for login.
+                         </div>
+
+                         <label style="margin-top:10px;">
+                             College Email (optional)
+                         </label>
+
+                         <input
+                             id="collegeEmail"
+                             name="collegeEmail"
+                             type="email"
+                             placeholder="College email (if available)">
 
                     </div>
 
@@ -498,7 +512,7 @@
                         </label>
 
                         <input
-                            type="password"
+                            id="password" name="password" minlength="6" type="password"
                             placeholder="Create password"
                             required>
 
@@ -514,7 +528,7 @@
                         </label>
 
                         <input
-                            type="password"
+                            id="confirmPassword" name="confirmPassword" minlength="6" type="password"
                             placeholder="Confirm password"
                             required>
 
@@ -534,8 +548,7 @@
                             📄 Upload your HIT Student ID
 
                             <input
-                                type="file"
-                                accept="image/*,.pdf"
+                                id="collegeId" name="collegeId" type="file" accept="image/jpeg,image/png,application/pdf"
                                 required>
 
                             <div class="id-note">
@@ -610,15 +623,151 @@
     </div>
 
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <script>
 
-       function register(event) {
+       const SUPABASE_URL = "https://ziyyqhnmhbwomibpsenf.supabase.co";
+       const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_i25Oy3Rbnzr3S45H4KzQyg_dLeEd3YH";
 
-    event.preventDefault();
+       const supabaseClient = window.supabase.createClient(
+           SUPABASE_URL,
+           SUPABASE_PUBLISHABLE_KEY
+       );
 
-    window.location.href = "verify.html";
+       async function register(event) {
+           event.preventDefault();
 
-}
+           const submitButton = document.querySelector(".submit");
+
+           const fullName = document.getElementById("fullName").value.trim();
+           const studentId = document.getElementById("studentId").value.trim();
+           const department = document.getElementById("department").value;
+           const year = document.getElementById("year").value;
+           const phone = document.getElementById("phone").value.trim();
+           const email = document.getElementById("email").value.trim();
+           const collegeEmail = document.getElementById("collegeEmail").value.trim();
+           const password = document.getElementById("password").value;
+           const confirmPassword = document.getElementById("confirmPassword").value;
+           const idFile = document.getElementById("collegeId").files[0];
+
+           if (password !== confirmPassword) {
+               alert("Passwords do not match.");
+               return;
+           }
+
+           if (!idFile) {
+               alert("Please upload your HIT Student ID.");
+               return;
+           }
+
+           const allowedTypes = ["image/jpeg", "image/png", "application/pdf"];
+
+           if (!allowedTypes.includes(idFile.type)) {
+               alert("Please upload a JPG, PNG, or PDF file.");
+               return;
+           }
+
+           if (idFile.size > 5 * 1024 * 1024) {
+               alert("College ID file must be 5 MB or smaller.");
+               return;
+           }
+
+           submitButton.disabled = true;
+           submitButton.textContent = "Creating account...";
+
+           try {
+               const { data, error } = await supabaseClient.auth.signUp({
+                   email: email,
+                   password: password,
+                   options: {
+                       data: {
+                           full_name: fullName,
+                           student_id: studentId,
+                           department: department,
+                           year: year,
+                           phone: phone
+                       }
+                   }
+               });
+
+               if (error) {
+                   throw error;
+               }
+
+               const user = data.user;
+
+               if (!user) {
+                   throw new Error("Account could not be created.");
+               }
+
+               if (!data.session) {
+                   alert(
+                       "Your account was created, but email confirmation is enabled. " +
+                       "Turn off Confirm email in Supabase for development, then try again."
+                   );
+                   return;
+               }
+
+               submitButton.textContent = "Saving profile...";
+
+               const { error: profileError } = await supabaseClient
+                   .from("profiles")
+                   .insert({
+                       id: user.id,
+                       full_name: fullName,
+                       student_id: studentId,
+                       department: department,
+                       year: year,
+                       phone: phone,
+                       college_email: collegeEmail || null,
+                       verification_status: "PENDING"
+                   });
+
+               if (profileError) {
+                   throw profileError;
+               }
+
+               submitButton.textContent = "Uploading ID...";
+
+               const extension = idFile.name.includes(".")
+                   ? idFile.name.split(".").pop().toLowerCase()
+                   : "file";
+
+               const safeStudentId = studentId.replace(/[^a-zA-Z0-9_-]/g, "_");
+               const filePath =
+                   `${user.id}/${safeStudentId}_college_id.${extension}`;
+
+               const { error: uploadError } = await supabaseClient
+                   .storage
+                   .from("student-documents")
+                   .upload(filePath, idFile, {
+                       contentType: idFile.type,
+                       upsert: false
+                   });
+
+               if (uploadError) {
+                   throw uploadError;
+               }
+
+               alert(
+                   "Registration submitted successfully. " +
+                   "Your account is now pending verification."
+               );
+
+               window.location.href = "verify.html";
+
+           } catch (error) {
+               console.error("Registration error:", error);
+               alert(
+                   "Registration failed: " +
+                   (error.message || "Please try again.")
+               );
+           } finally {
+               submitButton.disabled = false;
+               submitButton.textContent = "Submit for Verification →";
+           }
+       }
 
     </script>
 
