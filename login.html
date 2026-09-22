@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Login | HIT Marketplace</title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background:
+                linear-gradient(135deg, #071d3b, #0b376f);
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 25px;
+        }
+
+
+        /* MAIN CONTAINER */
+
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            min-height: 600px;
+
+            background: white;
+
+            border-radius: 18px;
+            overflow: hidden;
+
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+
+            box-shadow: 0 25px 70px rgba(0,0,0,.25);
+        }
+
+
+        /* LEFT SIDE */
+
+        .left {
+            background:
+                linear-gradient(
+                    145deg,
+                    #071d3b,
+                    #0b376f
+                );
+
+            color: white;
+
+            padding: 55px;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+
+        /* LOGO */
+
+        .logo {
+            width: 55px;
+            height: 55px;
+
+            background: #f4c542;
+            color: #071d3b;
+
+            border-radius: 12px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-weight: 900;
+
+            margin-bottom: 30px;
+        }
+
+
+        /* LEFT HEADING */
+
+        .left h1 {
+            font-size: 42px;
+            line-height: 1.15;
+
+            margin-bottom: 18px;
+        }
+
+        .left h1 span {
+            color: #f4c542;
+        }
+
+
+        /* LEFT TEXT */
+
+        .left p {
+            color: #cbd8e8;
+
+            line-height: 1.7;
+
+            max-width: 420px;
+        }
+
+
+        /* FEATURES */
+
+        .features {
+            margin-top: 35px;
+        }
+
+        .feature {
+            margin: 14px 0;
+
+            color: #e2ebf5;
+        }
+
+
+        /* RIGHT SIDE */
+
+        .right {
+            padding: 55px;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+
+        /* TITLE */
+
+        .right h2 {
+            color: #0b376f;
+
+            font-size: 32px;
+
+            margin-bottom: 8px;
+        }
+
+
+        /* SUBTITLE */
+
+        .subtitle {
+            color: #64748b;
+
+            font-size: 14px;
+
+            margin-bottom: 30px;
+        }
+
+
+        /* FORM */
+
+        .form-group {
+            margin-bottom: 19px;
+        }
+
+
+        /* LABEL */
+
+        .form-group label {
+            display: block;
+
+            margin-bottom: 7px;
+
+            color: #334155;
+
+            font-size: 14px;
+
+            font-weight: 600;
+        }
+
+
+        /* INPUT */
+
+        .form-group input {
+            width: 100%;
+
+            padding: 14px;
+
+            border: 1px solid #d8e0ea;
+
+            border-radius: 7px;
+
+            outline: none;
+
+            font-size: 14px;
+
+            transition: .2s;
+        }
+
+
+        /* INPUT FOCUS */
+
+        .form-group input:focus {
+            border-color: #0b376f;
+
+            box-shadow:
+                0 0 0 3px rgba(11,55,111,.08);
+        }
+
+
+        /* PASSWORD TOP ROW */
+
+        .password-row {
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            margin-bottom: 8px;
+        }
+
+
+        /* FORGOT PASSWORD */
+
+        .forgot {
+            color: #0b376f;
+
+            text-decoration: none;
+
+            font-size: 13px;
+
+            font-weight: 600;
+        }
+
+        .forgot:hover {
+            text-decoration: underline;
+        }
+
+
+        /* PASSWORD BOX */
+
+        .password-box {
+            position: relative;
+
+            width: 100%;
+        }
+
+
+        /* PASSWORD INPUT */
+
+        .password-box input {
+            width: 100%;
+
+            padding: 14px 46px 14px 14px;
+        }
+
+
+        /* SHOW / HIDE BUTTON */
+
+        .show-password {
+            position: absolute;
+
+            right: 10px;
+
+            top: 50%;
+
+            transform: translateY(-50%);
+
+            border: none;
+
+            background: transparent;
+
+            color: #64748b;
+
+            cursor: pointer;
+
+            padding: 6px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 5px;
+
+            transition: .15s;
+        }
+
+        .show-password svg {
+            width: 20px;
+            height: 20px;
+        }
+
+
+        /* SHOW / HIDE HOVER */
+
+        .show-password:hover {
+            color: #0b376f;
+            background: #f1f5f9;
+        }
+
+        .show-password:focus-visible {
+            outline: 2px solid #0b376f;
+            outline-offset: 2px;
+        }
+
+
+        /* LOGIN BUTTON */
+
+        .login-submit {
+            width: 100%;
+
+            padding: 14px;
+
+            background: #0b376f;
+
+            color: white;
+
+            border: none;
+
+            border-radius: 7px;
+
+            font-size: 15px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+            margin-top: 8px;
+
+            transition: .2s;
+        }
+
+
+        .login-submit:hover {
+            background: #082d5b;
+        }
+
+
+        /* REGISTER TEXT */
+
+        .register-text {
+            text-align: center;
+
+            margin-top: 24px;
+
+            color: #64748b;
+
+            font-size: 14px;
+        }
+
+
+        .register-text a {
+            color: #0b376f;
+
+            font-weight: 700;
+
+            text-decoration: none;
+        }
+
+
+        .register-text a:hover {
+            text-decoration: underline;
+        }
+
+
+        /* BACK */
+
+        .back {
+            text-align: center;
+
+            margin-top: 18px;
+        }
+
+
+        .back a {
+            color: #64748b;
+
+            text-decoration: none;
+
+            font-size: 13px;
+        }
+
+
+        .back a:hover {
+            color: #0b376f;
+        }
+
+
+        /* MOBILE */
+
+        @media(max-width: 750px) {
+
+            .container {
+                grid-template-columns: 1fr;
+            }
+
+
+            .left {
+                padding: 35px;
+            }
+
+
+            .left h1 {
+                font-size: 32px;
+            }
+
+
+            .features {
+                display: none;
+            }
+
+
+            .right {
+                padding: 35px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <div class="container">
+
+
+        <!-- ================================= -->
+        <!-- LEFT SIDE -->
+        <!-- ================================= -->
+
+        <div class="left">
+
+
+            <div class="logo">
+                HIT
+            </div>
+
+
+            <h1>
+
+                Welcome back to
+
+                <span>
+                    HIT Marketplace.
+                </span>
+
+            </h1>
+
+
+            <p>
+
+                Buy, sell and connect with fellow students
+                of Haldia Institute of Technology.
+
+            </p>
+
+
+            <div class="features">
+
+
+                <div class="feature">
+                    ✓ Verified student community
+                </div>
+
+
+                <div class="feature">
+                    ✓ Campus-based marketplace
+                </div>
+
+
+                <div class="feature">
+                    ✓ Chat with buyers and sellers
+                </div>
+
+
+                <div class="feature">
+                    ✓ Safe campus pickup
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- ================================= -->
+        <!-- RIGHT SIDE -->
+        <!-- ================================= -->
+
+        <div class="right">
+
+
+            <h2>
+                Sign in
+            </h2>
+
+
+            <p class="subtitle">
+
+                Login to your HIT Marketplace account.
+
+            </p>
+
+
+
+            <!-- LOGIN FORM -->
+
+            <form id="loginForm">
+
+
+                <!-- EMAIL -->
+
+                <div class="form-group">
+
+
+                    <label for="email">
+                        Email Address
+                    </label>
+
+
+                    <input
+                        type="email"
+                        id="email"
+                        placeholder="Enter your email"
+                        required>
+
+
+                </div>
+
+
+
+                <!-- PASSWORD -->
+
+                <div class="form-group">
+
+
+                    <div class="password-row">
+
+
+                        <label for="password">
+                            Password
+                        </label>
+
+
+                        <a
+                            href="#"
+                            class="forgot">
+
+                            Forgot password?
+
+                        </a>
+
+
+                    </div>
+
+
+
+                    <!-- PASSWORD + SHOW BUTTON -->
+
+                    <div class="password-box">
+
+
+                        <input
+                            type="password"
+                            id="password"
+                            placeholder="Enter your password"
+                            required>
+
+
+                        <button
+                            type="button"
+                            id="togglePassword"
+                            class="show-password"
+                            aria-label="Show password"
+                            aria-pressed="false">
+
+                            <!-- EYE (open) ICON -->
+                            <svg id="eyeOpen" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+
+                            <!-- EYE (slashed / hidden) ICON -->
+                            <svg id="eyeClosed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+                                <path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a21.62 21.62 0 0 1 5.06-6.06M9.9 4.24A10.94 10.94 0 0 1 12 4c7 0 11 8 11 8a21.6 21.6 0 0 1-3.22 4.53M14.12 14.12a3 3 0 1 1-4.24-4.24"></path>
+                                <line x1="1" y1="1" x2="23" y2="23"></line>
+                            </svg>
+
+                        </button>
+
+
+                    </div>
+
+
+                </div>
+
+
+
+                <!-- LOGIN BUTTON -->
+
+                <button
+                    type="submit"
+                    class="login-submit">
+
+                    Login
+
+                </button>
+
+
+            </form>
+
+
+
+            <!-- REGISTER -->
+
+            <div class="register-text">
+
+
+                Don't have an account?
+
+
+                <a href="register.html">
+
+                    Create an account
+
+                </a>
+
+
+            </div>
+
+
+
+            <!-- BACK TO HOME -->
+
+            <div class="back">
+
+
+                <a href="index.html">
+
+                    ← Back to Homepage
+
+                </a>
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+
+    <!-- ================================= -->
+    <!-- JAVASCRIPT -->
+    <!-- ================================= -->
+
+    <script>
+
+        document.addEventListener("DOMContentLoaded", function () {
+
+
+            /* SHOW / HIDE PASSWORD */
+
+            const password =
+                document.getElementById("password");
+
+            const toggleButton =
+                document.getElementById("togglePassword");
+
+            const eyeOpen =
+                document.getElementById("eyeOpen");
+
+            const eyeClosed =
+                document.getElementById("eyeClosed");
+
+
+            toggleButton.addEventListener("click", function () {
+
+
+                if (password.type === "password") {
+
+
+                    password.type = "text";
+
+                    eyeOpen.style.display = "none";
+                    eyeClosed.style.display = "block";
+
+                    toggleButton.setAttribute("aria-label", "Hide password");
+                    toggleButton.setAttribute("aria-pressed", "true");
+
+
+                } else {
+
+
+                    password.type = "password";
+
+                    eyeOpen.style.display = "block";
+                    eyeClosed.style.display = "none";
+
+                    toggleButton.setAttribute("aria-label", "Show password");
+                    toggleButton.setAttribute("aria-pressed", "false");
+
+
+                }
+
+            });
+
+
+
+            /* LOGIN */
+
+            const loginForm =
+                document.getElementById("loginForm");
+
+
+            loginForm.addEventListener("submit", function (event) {
+
+
+                event.preventDefault();
+
+
+                alert(
+                    "Login system will be connected to the database in the next step."
+                );
+
+
+            });
+
+
+        });
+
+    </script>
+
+
+</body>
+
+</html>

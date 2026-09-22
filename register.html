@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Register | HIT Marketplace</title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #f3f6fa;
+            padding: 35px 20px;
+        }
+
+        .wrapper {
+            max-width: 1100px;
+            margin: auto;
+            background: white;
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,.12);
+            display: grid;
+            grid-template-columns: 0.85fr 1.15fr;
+        }
+
+        /* LEFT */
+
+        .left {
+            background:
+                linear-gradient(
+                    145deg,
+                    #071d3b,
+                    #0b376f
+                );
+
+            color: white;
+            padding: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .logo {
+            width: 55px;
+            height: 55px;
+            background: #f4c542;
+            color: #071d3b;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            margin-bottom: 28px;
+        }
+
+        .left h1 {
+            font-size: 40px;
+            line-height: 1.15;
+            margin-bottom: 18px;
+        }
+
+        .left h1 span {
+            color: #f4c542;
+        }
+
+        .left p {
+            color: #cbd8e8;
+            line-height: 1.7;
+        }
+
+        .verification-box {
+            margin-top: 30px;
+            background: rgba(255,255,255,.08);
+            border: 1px solid rgba(255,255,255,.15);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .verification-box h3 {
+            margin-bottom: 10px;
+        }
+
+        .verification-box p {
+            font-size: 13px;
+        }
+
+        /* RIGHT */
+
+        .right {
+            padding: 45px 50px;
+        }
+
+        .right h2 {
+            color: #0b376f;
+            font-size: 30px;
+            margin-bottom: 7px;
+        }
+
+        .subtitle {
+            color: #64748b;
+            font-size: 14px;
+            margin-bottom: 25px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 17px;
+        }
+
+        .form-group {
+            margin-bottom: 17px;
+        }
+
+        .full {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            display: block;
+            color: #334155;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 7px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 12px 13px;
+            border: 1px solid #d7e0ea;
+            border-radius: 7px;
+            outline: none;
+            font-size: 14px;
+            background: white;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: #0b376f;
+            box-shadow: 0 0 0 3px rgba(11,55,111,.07);
+        }
+
+        .id-upload {
+            border: 2px dashed #cbd5e1;
+            border-radius: 9px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            background: #f8fafc;
+        }
+
+        .id-upload:hover {
+            border-color: #0b376f;
+        }
+
+        .id-upload input {
+            border: none;
+            padding: 5px;
+            margin-top: 10px;
+        }
+
+        .id-note {
+            color: #64748b;
+            font-size: 11px;
+            margin-top: 7px;
+        }
+
+        .terms {
+            display: flex;
+            align-items: flex-start;
+            gap: 9px;
+            margin: 8px 0 20px;
+        }
+
+        .terms input {
+            width: auto;
+            margin-top: 3px;
+        }
+
+        .terms label {
+            font-weight: 400;
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .submit {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 7px;
+            background: #0b376f;
+            color: white;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        .submit:hover {
+            background: #082d5b;
+        }
+
+        .login-text {
+            text-align: center;
+            margin-top: 20px;
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .login-text a {
+            color: #0b376f;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .back {
+            text-align: center;
+            margin-top: 13px;
+        }
+
+        .back a {
+            color: #64748b;
+            font-size: 12px;
+            text-decoration: none;
+        }
+
+        @media(max-width: 800px) {
+
+            .wrapper {
+                grid-template-columns: 1fr;
+            }
+
+            .left {
+                padding: 35px;
+            }
+
+            .right {
+                padding: 35px;
+            }
+
+        }
+
+        @media(max-width: 550px) {
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .full {
+                grid-column: auto;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <div class="wrapper">
+
+
+        <!-- LEFT -->
+
+        <div class="left">
+
+            <div class="logo">
+                HIT
+            </div>
+
+            <h1>
+
+                Join the
+                <span>
+                    HIT Marketplace.
+                </span>
+
+            </h1>
+
+            <p>
+
+                Create your student account and
+                become part of the campus marketplace.
+
+            </p>
+
+
+            <div class="verification-box">
+
+                <h3>
+                    🛡️ Student Verification
+                </h3>
+
+                <p>
+
+                    Your student identity will be verified
+                    before you get access to marketplace
+                    features.
+
+                </p>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- RIGHT -->
+
+        <div class="right">
+
+            <h2>
+                Create Account
+            </h2>
+
+            <p class="subtitle">
+
+                Register as a HIT student.
+
+            </p>
+
+
+            <form
+                onsubmit="register(event)">
+
+
+                <div class="form-grid">
+
+
+                    <!-- NAME -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Full Name *
+                        </label>
+
+                        <input
+                            type="text"
+                            placeholder="Enter your full name"
+                            required>
+
+                    </div>
+
+
+                    <!-- STUDENT ID -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Student ID / Roll Number *
+                        </label>
+
+                        <input
+                            type="text"
+                            placeholder="Enter your roll number"
+                            required>
+
+                    </div>
+
+
+                    <!-- DEPARTMENT -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Department *
+                        </label>
+
+                        <select required>
+
+                            <option value="">
+                                Select Department
+                            </option>
+
+                            <option>
+                                Information Technology
+                            </option>
+
+                            <option>
+                                Computer Science & Engineering
+                            </option>
+
+                            <option>
+                                Electronics & Communication
+                            </option>
+
+                            <option>
+                                Electrical Engineering
+                            </option>
+
+                            <option>
+                                Mechanical Engineering
+                            </option>
+
+                            <option>
+                                Civil Engineering
+                            </option>
+
+                            <option>
+                                Other
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- YEAR -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Year *
+                        </label>
+
+                        <select required>
+
+                            <option value="">
+                                Select Year
+                            </option>
+
+                            <option>
+                                1st Year
+                            </option>
+
+                            <option>
+                                2nd Year
+                            </option>
+
+                            <option>
+                                3rd Year
+                            </option>
+
+                            <option>
+                                4th Year
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- PHONE -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Phone Number *
+                        </label>
+
+                        <input
+                            type="tel"
+                            placeholder="Enter phone number"
+                            required>
+
+                    </div>
+
+
+                    <!-- EMAIL -->
+
+                    <div class="form-group">
+
+                        <label>
+                            College / Email *
+                        </label>
+
+                        <input
+                            type="email"
+                            placeholder="Enter your email"
+                            required>
+
+                    </div>
+
+
+                    <!-- PASSWORD -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Password *
+                        </label>
+
+                        <input
+                            type="password"
+                            placeholder="Create password"
+                            required>
+
+                    </div>
+
+
+                    <!-- CONFIRM -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Confirm Password *
+                        </label>
+
+                        <input
+                            type="password"
+                            placeholder="Confirm password"
+                            required>
+
+                    </div>
+
+
+                    <!-- ID -->
+
+                    <div class="form-group full">
+
+                        <label>
+                            College ID Card *
+                        </label>
+
+                        <div class="id-upload">
+
+                            📄 Upload your HIT Student ID
+
+                            <input
+                                type="file"
+                                accept="image/*,.pdf"
+                                required>
+
+                            <div class="id-note">
+
+                                Your ID will be used only for
+                                verification and will not be
+                                publicly displayed.
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+
+                <!-- TERMS -->
+
+                <div class="terms">
+
+                    <input
+                        type="checkbox"
+                        required>
+
+                    <label>
+
+                        I agree to the HIT Marketplace
+                        Terms & Conditions and understand
+                        that my student account requires
+                        verification.
+
+                    </label>
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="submit">
+
+                    Submit for Verification →
+
+                </button>
+
+
+            </form>
+
+
+            <div class="login-text">
+
+                Already have an account?
+
+                <a href="login.html">
+                    Login
+                </a>
+
+            </div>
+
+
+            <div class="back">
+
+                <a href="index.html">
+                    ← Back to Homepage
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <script>
+
+       function register(event) {
+
+    event.preventDefault();
+
+    window.location.href = "verify.html";
+
+}
+
+    </script>
+
+
+</body>
+
+</html>

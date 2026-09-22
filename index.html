@@ -1,0 +1,1767 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>HIT Marketplace | Haldia Institute of Technology</title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: #f7f9fc;
+            color: #172033;
+        }
+
+        /* =========================
+           TOP BAR
+        ========================= */
+
+        .topbar {
+            background: #071d3b;
+            color: #dbe7f5;
+            text-align: center;
+            padding: 9px;
+            font-size: 13px;
+        }
+
+        /* =========================
+           NAVBAR
+        ========================= */
+
+        nav {
+            height: 78px;
+            background: rgba(255,255,255,0.97);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 7%;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid #e5eaf1;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-logo {
+            width: 46px;
+            height: 46px;
+            background: #0b376f;
+            color: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 17px;
+            box-shadow: 0 5px 15px rgba(11,55,111,.2);
+        }
+
+        .brand-name {
+            color: #0b376f;
+            font-size: 21px;
+            font-weight: 800;
+        }
+
+        .brand-subtitle {
+            font-size: 10px;
+            color: #718096;
+            letter-spacing: 1px;
+            margin-top: 2px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #374151;
+            font-size: 14px;
+            font-weight: 600;
+            transition: .2s;
+        }
+
+        .nav-links a:hover {
+            color: #0b376f;
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .login-btn {
+            background: white;
+            color: #0b376f;
+            border: 1px solid #0b376f;
+            padding: 10px 20px;
+            border-radius: 7px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .register-btn {
+            background: #0b376f;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 7px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* =========================
+           HERO
+        ========================= */
+
+        .hero {
+            min-height: 610px;
+            padding: 85px 7%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 50px;
+
+            background:
+                radial-gradient(
+                    circle at 80% 20%,
+                    rgba(244,197,66,.15),
+                    transparent 30%
+                ),
+                linear-gradient(
+                    135deg,
+                    #071d3b,
+                    #0b376f 65%,
+                    #124d91
+                );
+
+            color: white;
+            overflow: hidden;
+        }
+
+        .hero-content {
+            max-width: 690px;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,.1);
+            border: 1px solid rgba(255,255,255,.2);
+            padding: 9px 15px;
+            border-radius: 30px;
+            font-size: 13px;
+            margin-bottom: 23px;
+        }
+
+        .hero h1 {
+            font-size: 58px;
+            line-height: 1.08;
+            letter-spacing: -1.5px;
+            margin-bottom: 24px;
+        }
+
+        .hero h1 span {
+            color: #f4c542;
+        }
+
+        .hero-description {
+            color: #d8e4f2;
+            font-size: 18px;
+            line-height: 1.7;
+            max-width: 610px;
+            margin-bottom: 34px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 14px;
+        }
+
+        .primary-btn {
+            padding: 15px 27px;
+            border: none;
+            border-radius: 7px;
+            background: #f4c542;
+            color: #162033;
+            font-weight: 800;
+            cursor: pointer;
+            font-size: 15px;
+            transition: .2s;
+        }
+
+        .primary-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .secondary-btn {
+            padding: 15px 27px;
+            border: 1px solid rgba(255,255,255,.5);
+            border-radius: 7px;
+            background: rgba(255,255,255,.05);
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        /* HERO CARD */
+
+        .hero-visual {
+            width: 390px;
+            min-width: 390px;
+            background: rgba(255,255,255,.09);
+            border: 1px solid rgba(255,255,255,.2);
+            backdrop-filter: blur(15px);
+            padding: 28px;
+            border-radius: 18px;
+            box-shadow: 0 25px 60px rgba(0,0,0,.2);
+        }
+
+        .visual-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 22px;
+        }
+
+        .visual-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 17px 0;
+            border-bottom: 1px solid rgba(255,255,255,.13);
+        }
+
+        .visual-item:last-child {
+            border-bottom: none;
+        }
+
+        .visual-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .visual-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 9px;
+            background: rgba(255,255,255,.12);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .visual-item small {
+            color: #cbd8e8;
+        }
+
+        .verified {
+            color: #f4c542;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        /* =========================
+           SEARCH
+        ========================= */
+
+        .search-container {
+            width: 86%;
+            margin: -34px auto 0;
+            position: relative;
+            z-index: 10;
+        }
+
+        .search-box {
+            background: white;
+            padding: 14px;
+            border-radius: 12px;
+            display: flex;
+            gap: 10px;
+            box-shadow: 0 15px 45px rgba(13,42,75,.14);
+        }
+
+        .search-box input {
+            flex: 1;
+            border: none;
+            outline: none;
+            padding: 14px;
+            font-size: 15px;
+            color: #334155;
+        }
+
+        .search-box button {
+            background: #0b376f;
+            color: white;
+            border: none;
+            padding: 0 28px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+        }
+
+        /* =========================
+           GENERAL SECTION
+        ========================= */
+
+        section {
+            padding: 85px 7%;
+        }
+
+        .section-heading {
+            text-align: center;
+            margin-bottom: 45px;
+        }
+
+        .section-heading h2 {
+            color: #0b376f;
+            font-size: 34px;
+            margin-bottom: 10px;
+        }
+
+        .section-heading p {
+            color: #64748b;
+            font-size: 15px;
+        }
+
+        /* =========================
+           CATEGORIES
+        ========================= */
+
+        .categories {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            max-width: 1050px;
+            margin: auto;
+        }
+
+        .category-card {
+            background: white;
+            border: 1px solid #e5eaf1;
+            border-radius: 12px;
+            padding: 28px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: .25s;
+        }
+
+        .category-card:hover {
+            transform: translateY(-6px);
+            border-color: #0b376f;
+            box-shadow: 0 15px 35px rgba(11,55,111,.1);
+        }
+
+        .category-icon {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 16px;
+            background: #edf4fc;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 27px;
+        }
+
+        .category-card h3 {
+            color: #1e293b;
+            font-size: 16px;
+        }
+
+        .category-card p {
+            margin-top: 6px;
+            color: #94a3b8;
+            font-size: 12px;
+        }
+
+        /* =========================
+           BUY SELL
+        ========================= */
+
+        .market {
+            background: white;
+        }
+
+        .market-grid {
+            max-width: 1050px;
+            margin: auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        .market-card {
+            padding: 45px;
+            border-radius: 14px;
+            background: #f5f8fc;
+            border: 1px solid #e3eaf3;
+        }
+
+        .market-card.sell {
+            background: #0b376f;
+            color: white;
+        }
+
+        .market-card h3 {
+            color: #0b376f;
+            font-size: 28px;
+            margin-bottom: 14px;
+        }
+
+        .market-card.sell h3 {
+            color: white;
+        }
+
+        .market-card p {
+            color: #64748b;
+            line-height: 1.7;
+            margin-bottom: 25px;
+        }
+
+        .market-card.sell p {
+            color: #d4e1ef;
+        }
+
+        .market-card button {
+            border: none;
+            padding: 13px 23px;
+            border-radius: 7px;
+            background: #0b376f;
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .market-card.sell button {
+            background: #f4c542;
+            color: #172033;
+        }
+
+        /* =========================
+           VERIFICATION
+        ========================= */
+
+        .trust {
+            background: #f1f6fc;
+        }
+
+        .trust-grid {
+            max-width: 1050px;
+            margin: auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .trust-text h2 {
+            color: #0b376f;
+            font-size: 34px;
+            margin-bottom: 17px;
+        }
+
+        .trust-text p {
+            color: #64748b;
+            line-height: 1.8;
+        }
+
+        .trust-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .trust-item {
+            background: white;
+            padding: 19px;
+            border-radius: 10px;
+            border: 1px solid #e3eaf3;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .trust-icon {
+            width: 45px;
+            height: 45px;
+            background: #edf4fc;
+            color: #0b376f;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .trust-item strong {
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .trust-item span {
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        /* =========================
+           HOW IT WORKS
+        ========================= */
+
+        .steps {
+            max-width: 1050px;
+            margin: auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+        }
+
+        .step {
+            text-align: center;
+            padding: 25px;
+        }
+
+        .step-number {
+            width: 60px;
+            height: 60px;
+            margin: auto;
+            border-radius: 50%;
+            background: #0b376f;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 18px;
+        }
+
+        .step h3 {
+            margin: 20px 0 10px;
+        }
+
+        .step p {
+            color: #64748b;
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+        /* =========================
+           SAFETY
+        ========================= */
+
+        .safety {
+            background: white;
+        }
+
+        .safety-box {
+            max-width: 1050px;
+            margin: auto;
+            background: linear-gradient(
+                135deg,
+                #071d3b,
+                #0b376f
+            );
+            color: white;
+            border-radius: 16px;
+            padding: 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 40px;
+        }
+
+        .safety-box h2 {
+            font-size: 30px;
+            margin-bottom: 12px;
+        }
+
+        .safety-box p {
+            color: #cbd8e8;
+            line-height: 1.6;
+            max-width: 550px;
+        }
+
+        .safety-points {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            min-width: 350px;
+        }
+
+        .safety-point {
+            color: #dce8f5;
+            font-size: 14px;
+        }
+
+        /* =========================
+           CTA
+        ========================= */
+
+        .cta {
+            text-align: center;
+            padding: 80px 7%;
+        }
+
+        .cta h2 {
+            color: #0b376f;
+            font-size: 36px;
+            margin-bottom: 13px;
+        }
+
+        .cta p {
+            color: #64748b;
+            margin-bottom: 25px;
+        }
+
+        /* =========================
+           FOOTER
+        ========================= */
+
+        footer {
+            background: #061a34;
+            color: white;
+            padding: 55px 7% 25px;
+        }
+
+        .footer-main {
+            display: flex;
+            justify-content: space-between;
+            gap: 60px;
+        }
+
+        .footer-brand {
+            max-width: 380px;
+        }
+
+        .footer-brand h2 {
+            margin-bottom: 12px;
+        }
+
+        .footer-brand p {
+            color: #94a8bf;
+            line-height: 1.7;
+            font-size: 14px;
+        }
+
+        .footer-columns {
+            display: flex;
+            gap: 70px;
+        }
+
+        .footer-column h4 {
+            margin-bottom: 15px;
+        }
+
+        .footer-column p {
+            color: #94a8bf;
+            font-size: 14px;
+            margin: 9px 0;
+            cursor: pointer;
+        }
+
+        .copyright {
+            border-top: 1px solid rgba(255,255,255,.1);
+            margin-top: 40px;
+            padding-top: 20px;
+            color: #71869e;
+            font-size: 12px;
+        }
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+
+        @media(max-width: 1000px) {
+
+            .nav-links {
+                display: none;
+            }
+
+            .hero {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .hero-content {
+                max-width: 800px;
+            }
+
+            .hero-description {
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .hero-buttons {
+                justify-content: center;
+            }
+
+            .hero-visual {
+                width: 100%;
+                max-width: 500px;
+                min-width: auto;
+            }
+
+            .categories {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .trust-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .safety-box {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .safety-points {
+                width: 100%;
+            }
+        }
+
+        @media(max-width: 650px) {
+
+            nav {
+                padding: 0 5%;
+            }
+
+            .brand-subtitle {
+                display: none;
+            }
+
+            .register-btn {
+                padding: 9px 13px;
+            }
+
+            .hero {
+                padding: 65px 6%;
+            }
+
+            .hero h1 {
+                font-size: 40px;
+            }
+
+            .hero-description {
+                font-size: 16px;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+            }
+
+            .search-box {
+                flex-direction: column;
+            }
+
+            .search-box button {
+                padding: 14px;
+            }
+
+            .categories {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .market-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .steps {
+                grid-template-columns: 1fr;
+            }
+
+            .safety-points {
+                grid-template-columns: 1fr;
+                min-width: auto;
+                text-align: left;
+            }
+
+            .footer-main {
+                flex-direction: column;
+            }
+
+            .footer-columns {
+                gap: 35px;
+                flex-wrap: wrap;
+            }
+
+            .cta h2 {
+                font-size: 28px;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- TOP BAR -->
+
+    <div class="topbar">
+
+        🎓 HIT Student Marketplace • Buy. Sell. Connect.
+
+    </div>
+
+
+
+    <!-- NAVBAR -->
+
+    <nav>
+
+        <div class="brand">
+
+            <div class="brand-logo">
+                HIT
+            </div>
+
+            <div>
+
+                <div class="brand-name">
+                    HIT Marketplace
+                </div>
+
+                <div class="brand-subtitle">
+                    STUDENT COMMUNITY MARKETPLACE
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <ul class="nav-links">
+
+            <li>
+                <a href="#">Home</a>
+            </li>
+
+            <li>
+                <a href="#categories">Categories</a>
+            </li>
+
+            <li>
+                <a href="#how">How It Works</a>
+            </li>
+
+            <li>
+                <a href="#verification">Verification</a>
+            </li>
+
+        </ul>
+
+
+        <div class="nav-actions">
+
+            <button
+                class="login-btn"
+                onclick="goToLogin()">
+
+                Login
+
+            </button>
+
+            <button
+                class="register-btn"
+                onclick="goToRegister()">
+
+                Register
+
+            </button>
+
+        </div>
+
+    </nav>
+
+
+
+    <!-- HERO -->
+
+    <section class="hero">
+
+        <div class="hero-content">
+
+            <div class="hero-badge">
+
+                ✓ Exclusively for HIT Students
+
+            </div>
+
+
+            <h1>
+
+                Buy & Sell
+                <br>
+
+                <span>Within Your Campus.</span>
+
+            </h1>
+
+
+            <p class="hero-description">
+
+                Find affordable books, electronics, cycles,
+                hostel items and more from fellow students
+                at Haldia Institute of Technology.
+
+            </p>
+
+
+            <div class="hero-buttons">
+
+                <button
+                    class="primary-btn"
+                    onclick="goToLogin()">
+
+                    Browse Marketplace →
+
+                </button>
+
+
+                <button
+                    class="secondary-btn"
+                    onclick="goToLogin()">
+
+                    + Sell Something
+
+                </button>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- HERO VISUAL -->
+
+        <div class="hero-visual">
+
+            <div class="visual-title">
+
+                Why HIT Marketplace?
+
+            </div>
+
+
+            <div class="visual-item">
+
+                <div class="visual-left">
+
+                    <div class="visual-icon">
+                        🎓
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            HIT Students
+                        </strong>
+
+                        <br>
+
+                        <small>
+                            Student-focused
+                        </small>
+
+                    </div>
+
+                </div>
+
+                <span class="verified">
+                    ✓
+                </span>
+
+            </div>
+
+
+            <div class="visual-item">
+
+                <div class="visual-left">
+
+                    <div class="visual-icon">
+                        🛡️
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            Verified Accounts
+                        </strong>
+
+                        <br>
+
+                        <small>
+                            Student verification
+                        </small>
+
+                    </div>
+
+                </div>
+
+                <span class="verified">
+                    ✓
+                </span>
+
+            </div>
+
+
+            <div class="visual-item">
+
+                <div class="visual-left">
+
+                    <div class="visual-icon">
+                        💬
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            Campus Chat
+                        </strong>
+
+                        <br>
+
+                        <small>
+                            Talk to sellers
+                        </small>
+
+                    </div>
+
+                </div>
+
+                <span class="verified">
+                    ✓
+                </span>
+
+            </div>
+
+
+            <div class="visual-item">
+
+                <div class="visual-left">
+
+                    <div class="visual-icon">
+                        📍
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            Local Pickup
+                        </strong>
+
+                        <br>
+
+                        <small>
+                            Meet on campus
+                        </small>
+
+                    </div>
+
+                </div>
+
+                <span class="verified">
+                    ✓
+                </span>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- SEARCH -->
+
+    <div class="search-container">
+
+        <div class="search-box">
+
+            <input
+                type="text"
+                placeholder="Search books, calculators, electronics, cycles..."
+            >
+
+            <button onclick="goToLogin()">
+
+                🔍 Search
+
+            </button>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- CATEGORIES -->
+
+    <section id="categories">
+
+        <div class="section-heading">
+
+            <h2>
+                Explore Categories
+            </h2>
+
+            <p>
+                Everything students need, in one campus marketplace.
+            </p>
+
+        </div>
+
+
+        <div class="categories">
+
+
+            <div class="category-card">
+
+                <div class="category-icon">
+                    📚
+                </div>
+
+                <h3>
+                    Books
+                </h3>
+
+                <p>
+                    Textbooks & reference books
+                </p>
+
+            </div>
+
+
+            <div class="category-card">
+
+                <div class="category-icon">
+                    💻
+                </div>
+
+                <h3>
+                    Electronics
+                </h3>
+
+                <p>
+                    Laptops & accessories
+                </p>
+
+            </div>
+
+
+            <div class="category-card">
+
+                <div class="category-icon">
+                    🚲
+                </div>
+
+                <h3>
+                    Cycles
+                </h3>
+
+                <p>
+                    Bikes & cycles
+                </p>
+
+            </div>
+
+
+            <div class="category-card">
+
+                <div class="category-icon">
+                    🪑
+                </div>
+
+                <h3>
+                    Furniture
+                </h3>
+
+                <p>
+                    Chairs, tables & more
+                </p>
+
+            </div>
+
+
+            <div class="category-card">
+
+                <div class="category-icon">
+                    🎧
+                </div>
+
+                <h3>
+                    Accessories
+                </h3>
+
+                <p>
+                    Headphones & gadgets
+                </p>
+
+            </div>
+
+
+            <div class="category-card">
+
+                <div class="category-icon">
+                    👕
+                </div>
+
+                <h3>
+                    Clothing
+                </h3>
+
+                <p>
+                    Clothes & essentials
+                </p>
+
+            </div>
+
+
+            <div class="category-card">
+
+                <div class="category-icon">
+                    📝
+                </div>
+
+                <h3>
+                    Notes
+                </h3>
+
+                <p>
+                    Study materials
+                </p>
+
+            </div>
+
+
+            <div class="category-card">
+
+                <div class="category-icon">
+                    🏠
+                </div>
+
+                <h3>
+                    Hostel Items
+                </h3>
+
+                <p>
+                    Useful hostel products
+                </p>
+
+            </div>
+
+
+        </div>
+
+    </section>
+
+
+
+    <!-- BUY / SELL -->
+
+    <section class="market">
+
+        <div class="section-heading">
+
+            <h2>
+                What are you looking for?
+            </h2>
+
+            <p>
+                Choose how you want to use the marketplace.
+            </p>
+
+        </div>
+
+
+        <div class="market-grid">
+
+
+            <div class="market-card">
+
+                <h3>
+                    🛒 I Want to Buy
+                </h3>
+
+                <p>
+
+                    Discover useful products listed by
+                    fellow HIT students. Search, compare,
+                    save items and chat with sellers.
+
+                </p>
+
+                <button onclick="goToLogin()">
+
+                    Browse Marketplace →
+
+                </button>
+
+            </div>
+
+
+            <div class="market-card sell">
+
+                <h3>
+                    🏷️ I Want to Sell
+                </h3>
+
+                <p>
+
+                    Have something you no longer need?
+                    Create a listing and connect with
+                    students who are looking for it.
+
+                </p>
+
+                <button onclick="goToLogin()">
+
+                    Sell an Item →
+
+                </button>
+
+            </div>
+
+
+        </div>
+
+    </section>
+
+
+
+    <!-- VERIFICATION -->
+
+    <section
+        class="trust"
+        id="verification">
+
+        <div class="trust-grid">
+
+
+            <div class="trust-text">
+
+                <h2>
+                    Built Around Student Trust
+                </h2>
+
+                <p>
+
+                    HIT Marketplace is designed for a
+                    student-only environment. Accounts can
+                    be verified before accessing marketplace
+                    features, helping create a more trusted
+                    campus community.
+
+                </p>
+
+            </div>
+
+
+            <div class="trust-list">
+
+
+                <div class="trust-item">
+
+                    <div class="trust-icon">
+                        🎓
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            Student Verification
+                        </strong>
+
+                        <span>
+                            Verify your HIT student identity.
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="trust-item">
+
+                    <div class="trust-icon">
+                        🔐
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            Protected Accounts
+                        </strong>
+
+                        <span>
+                            Secure login for marketplace access.
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="trust-item">
+
+                    <div class="trust-icon">
+                        💬
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            Private Chat
+                        </strong>
+
+                        <span>
+                            Contact sellers without publicly
+                            displaying phone numbers.
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="trust-item">
+
+                    <div class="trust-icon">
+                        📍
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            Campus Pickup
+                        </strong>
+
+                        <span>
+                            Choose a safe public campus location.
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- HOW IT WORKS -->
+
+    <section id="how">
+
+        <div class="section-heading">
+
+            <h2>
+                How It Works
+            </h2>
+
+            <p>
+                Simple, local and designed for HIT students.
+            </p>
+
+        </div>
+
+
+        <div class="steps">
+
+
+            <div class="step">
+
+                <div class="step-number">
+                    01
+                </div>
+
+                <h3>
+                    Create Account
+                </h3>
+
+                <p>
+                    Register and verify your HIT
+                    student account.
+                </p>
+
+            </div>
+
+
+            <div class="step">
+
+                <div class="step-number">
+                    02
+                </div>
+
+                <h3>
+                    Find or List
+                </h3>
+
+                <p>
+                    Search for an item or list something
+                    you want to sell.
+                </p>
+
+            </div>
+
+
+            <div class="step">
+
+                <div class="step-number">
+                    03
+                </div>
+
+                <h3>
+                    Chat & Connect
+                </h3>
+
+                <p>
+                    Talk with the buyer or seller and
+                    arrange a campus meeting.
+                </p>
+
+            </div>
+
+
+        </div>
+
+    </section>
+
+
+
+    <!-- SAFETY -->
+
+    <section class="safety">
+
+        <div class="safety-box">
+
+            <div>
+
+                <h2>
+                    Buy & Sell Responsibly
+                </h2>
+
+                <p>
+
+                    Always inspect an item before completing
+                    a deal. Meet in a public campus location
+                    and never share your password or OTP.
+
+                </p>
+
+            </div>
+
+
+            <div class="safety-points">
+
+                <div class="safety-point">
+                    ✓ Meet in a public location
+                </div>
+
+                <div class="safety-point">
+                    ✓ Inspect before buying
+                </div>
+
+                <div class="safety-point">
+                    ✓ Never share OTP
+                </div>
+
+                <div class="safety-point">
+                    ✓ Report suspicious listings
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- CTA -->
+
+    <section class="cta">
+
+        <h2>
+            Ready to join HIT Marketplace?
+        </h2>
+
+        <p>
+            Create your student account and get started.
+        </p>
+
+        <button
+            class="primary-btn"
+            onclick="goToRegister()">
+
+            Create Student Account →
+
+        </button>
+
+    </section>
+
+
+
+    <!-- FOOTER -->
+
+    <footer>
+
+        <div class="footer-main">
+
+
+            <div class="footer-brand">
+
+                <h2>
+                    HIT Marketplace
+                </h2>
+
+                <p>
+
+                    A student-focused marketplace for
+                    Haldia Institute of Technology where
+                    students can buy, sell and connect
+                    within their campus community.
+
+                </p>
+
+            </div>
+
+
+            <div class="footer-columns">
+
+
+                <div class="footer-column">
+
+                    <h4>
+                        Marketplace
+                    </h4>
+
+                    <p onclick="goToLogin()">
+                        Browse Items
+                    </p>
+
+                    <p onclick="goToLogin()">
+                        Sell an Item
+                    </p>
+
+                    <p>
+                        Categories
+                    </p>
+
+                </div>
+
+
+                <div class="footer-column">
+
+                    <h4>
+                        Account
+                    </h4>
+
+                    <p onclick="goToLogin()">
+                        Login
+                    </p>
+
+                    <p onclick="goToRegister()">
+                        Register
+                    </p>
+
+                    <p>
+                        Verification
+                    </p>
+
+                </div>
+
+
+                <div class="footer-column">
+
+                    <h4>
+                        Support
+                    </h4>
+
+                    <p>
+                        Safety
+                    </p>
+
+                    <p>
+                        Contact
+                    </p>
+
+                    <p>
+                        Privacy
+                    </p>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+        <div class="copyright">
+
+            © 2026 HIT Marketplace • Student Community Marketplace
+
+        </div>
+
+    </footer>
+
+
+
+    <!-- =========================
+         JAVASCRIPT
+    ========================= -->
+
+    <script>
+
+        function goToLogin() {
+
+            window.location.href = "login.html";
+
+        }
+
+
+        function goToRegister() {
+
+            window.location.href = "register.html";
+
+        }
+
+    </script>
+
+
+</body>
+
+</html>

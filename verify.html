@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Verification | HIT Marketplace</title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(
+                135deg,
+                #071d3b,
+                #0b376f
+            );
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 25px;
+        }
+
+        .card {
+            width: 100%;
+            max-width: 600px;
+            background: white;
+            border-radius: 18px;
+            padding: 50px;
+            text-align: center;
+            box-shadow: 0 25px 70px rgba(0,0,0,.25);
+        }
+
+        .icon {
+            width: 85px;
+            height: 85px;
+            margin: 0 auto 25px;
+
+            background: #fff7d6;
+            color: #d39f00;
+
+            border-radius: 50%;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 38px;
+        }
+
+        h1 {
+            color: #0b376f;
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+
+        .description {
+            color: #64748b;
+            line-height: 1.7;
+            font-size: 15px;
+            margin-bottom: 30px;
+        }
+
+        .status {
+            background: #fff8df;
+            border: 1px solid #f3df8c;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+
+        .status strong {
+            display: block;
+            color: #9a7400;
+            font-size: 18px;
+            margin-bottom: 6px;
+        }
+
+        .status span {
+            color: #7c6a32;
+            font-size: 13px;
+        }
+
+        .steps {
+            text-align: left;
+            margin: 25px 0;
+        }
+
+        .step {
+            display: flex;
+            gap: 15px;
+            margin: 18px 0;
+        }
+
+        .number {
+            min-width: 34px;
+            height: 34px;
+
+            background: #0b376f;
+            color: white;
+
+            border-radius: 50%;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .step h3 {
+            color: #1e293b;
+            font-size: 15px;
+            margin-bottom: 3px;
+        }
+
+        .step p {
+            color: #64748b;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+
+            background: #0b376f;
+            color: white;
+
+            border: none;
+            border-radius: 7px;
+
+            font-size: 15px;
+            font-weight: 700;
+
+            cursor: pointer;
+        }
+
+        .home {
+            display: block;
+            margin-top: 18px;
+
+            color: #64748b;
+            text-decoration: none;
+            font-size: 13px;
+        }
+
+        @media(max-width: 550px) {
+
+            .card {
+                padding: 35px 25px;
+            }
+
+            h1 {
+                font-size: 27px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <div class="card">
+
+
+        <div class="icon">
+            ⏳
+        </div>
+
+
+        <h1>
+            Verification Pending
+        </h1>
+
+
+        <p class="description">
+
+            Thank you for registering with
+            <strong>HIT Marketplace</strong>.
+
+            Your student verification request has
+            been successfully submitted.
+
+        </p>
+
+
+        <div class="status">
+
+            <strong>
+                🟡 PENDING
+            </strong>
+
+            <span>
+                Your account is waiting for verification.
+            </span>
+
+        </div>
+
+
+        <div class="steps">
+
+
+            <div class="step">
+
+                <div class="number">
+                    1
+                </div>
+
+                <div>
+
+                    <h3>
+                        Student Information Submitted
+                    </h3>
+
+                    <p>
+                        Your registration details have been received.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="step">
+
+                <div class="number">
+                    2
+                </div>
+
+                <div>
+
+                    <h3>
+                        Student ID Review
+                    </h3>
+
+                    <p>
+                        An administrator will verify your HIT
+                        student identity.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="step">
+
+                <div class="number">
+                    3
+                </div>
+
+                <div>
+
+                    <h3>
+                        Account Activated
+                    </h3>
+
+                    <p>
+                        Once approved, you can log in and
+                        access marketplace features.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+        <button
+            class="login-btn"
+            onclick="window.location.href='login.html'">
+
+            Go to Login
+
+        </button>
+
+
+        <a
+            href="index.html"
+            class="home">
+
+            ← Back to Homepage
+
+        </a>
+
+
+    </div>
+
+
+</body>
+
+</html>
