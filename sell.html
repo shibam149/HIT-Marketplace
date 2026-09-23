@@ -1,214 +1,350 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sell an Item - HIT Marketplace</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sell an Item | HIT Marketplace</title>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", Arial, sans-serif;
+}
 
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: Arial, sans-serif;
-    }
+body {
+  background: #f7f9fc;
+  color: #172033;
+}
 
-    body {
-      background: #f4f7fb;
-      color: #222;
-    }
+.topbar {
+  background: #071d3b;
+  color: #dbe7f5;
+  text-align: center;
+  padding: 9px;
+  font-size: 13px;
+}
 
-    header {
-      background: #123b6d;
-      color: white;
-      padding: 18px 30px;
-    }
+nav {
+  height: 78px;
+  background: rgba(255,255,255,0.97);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 7%;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  border-bottom: 1px solid #e5eaf1;
+}
 
-    header h1 {
-      font-size: 24px;
-    }
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+}
 
-    .container {
-      max-width: 700px;
-      margin: 35px auto;
-      padding: 0 20px;
-    }
+.brand-logo {
+  width: 46px;
+  height: 46px;
+  background: #0b376f;
+  color: white;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 17px;
+}
 
-    .form-card {
-      background: white;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 3px 15px rgba(0,0,0,0.08);
-    }
+.brand-name {
+  color: #0b376f;
+  font-size: 21px;
+  font-weight: 800;
+}
 
-    h2 {
-      color: #123b6d;
-      margin-bottom: 25px;
-    }
+.back-link {
+  color: #0b376f;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14px;
+}
 
-    label {
-      display: block;
-      font-weight: bold;
-      margin-bottom: 7px;
-      margin-top: 18px;
-    }
+.page-wrap {
+  max-width: 720px;
+  margin: 50px auto 90px;
+  padding: 0 20px;
+}
 
-    input,
-    select,
-    textarea {
-      width: 100%;
-      padding: 12px;
-      border: 1px solid #ccc;
-      border-radius: 7px;
-      font-size: 15px;
-    }
+.page-heading h1 {
+  color: #0b376f;
+  font-size: 30px;
+  margin-bottom: 8px;
+}
 
-    textarea {
-      min-height: 120px;
-      resize: vertical;
-    }
+.page-heading p {
+  color: #64748b;
+  font-size: 14px;
+  margin-bottom: 32px;
+}
 
-    .submit-btn {
-      width: 100%;
-      margin-top: 25px;
-      padding: 13px;
-      border: none;
-      border-radius: 7px;
-      background: #123b6d;
-      color: white;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-    }
+form {
+  background: white;
+  border: 1px solid #e5eaf1;
+  border-radius: 14px;
+  padding: 35px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
 
-    .submit-btn:disabled {
-      background: #888;
-      cursor: not-allowed;
-    }
+.field label {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  color: #172033;
+  margin-bottom: 7px;
+}
 
-    .back-btn {
-      display: inline-block;
-      margin-top: 15px;
-      text-decoration: none;
-      color: #123b6d;
-    }
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #d7dfea;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  color: #172033;
+  font-family: inherit;
+}
 
-    #message {
-      margin-top: 18px;
-      padding: 12px;
-      border-radius: 7px;
-      display: none;
-    }
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  border-color: #0b376f;
+}
 
-    .note {
-      margin-top: 8px;
-      font-size: 13px;
-      color: #666;
-    }
-  </style>
+.field textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.image-drop {
+  border: 2px dashed #cbd8e8;
+  border-radius: 10px;
+  padding: 24px;
+  text-align: center;
+  cursor: pointer;
+  color: #64748b;
+  font-size: 13px;
+  position: relative;
+  overflow: hidden;
+}
+
+.image-drop.has-image {
+  border-style: solid;
+  padding: 0;
+}
+
+#previewImg {
+  display: none;
+  width: 100%;
+  max-height: 260px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.submit-btn {
+  background: #0b376f;
+  color: white;
+  border: none;
+  padding: 15px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  margin-top: 6px;
+}
+
+.submit-btn:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+}
+
+.status-msg {
+  font-size: 13px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  display: none;
+}
+
+.status-msg.error {
+  display: block;
+  background: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+}
+
+.status-msg.success {
+  display: block;
+  background: #f0fdf4;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+}
+
+@media(max-width:650px) {
+  .row-2 {
+    grid-template-columns: 1fr;
+  }
+
+  form {
+    padding: 22px;
+  }
+}
+</style>
 </head>
 
 <body>
 
-<header>
-  <h1>HIT Marketplace</h1>
-</header>
+<div class="topbar">
+  🎓 HIT Student Marketplace • Buy. Sell. Connect.
+</div>
 
-<div class="container">
+<nav>
+  <a class="brand" href="index.html">
+    <div class="brand-logo">HIT</div>
+    <div class="brand-name">HIT Marketplace</div>
+  </a>
 
-  <div class="form-card">
+  <a class="back-link" href="index.html">
+    ← Back to Home
+  </a>
+</nav>
 
-    <h2>Sell an Item</h2>
+<div class="page-wrap">
 
-    <form id="sellForm">
+  <div class="page-heading">
+    <h1>Sell an Item</h1>
+    <p>
+      Fill in the details below — your listing will be visible to other
+      verified HIT students.
+    </p>
+  </div>
 
-      <label for="title">Item Name *</label>
+  <form id="listingForm">
+
+    <div class="field">
+      <label for="title">Item Title</label>
+
       <input
         type="text"
         id="title"
-        placeholder="Example: Engineering Calculator"
+        placeholder="e.g. Engineering Mathematics Textbook"
         required
       >
+    </div>
 
-      <label for="category">Category *</label>
-      <select id="category" required>
-        <option value="">Select category</option>
-        <option value="Books">Books</option>
-        <option value="Electronics">Electronics</option>
-        <option value="Calculator">Calculator</option>
-        <option value="Notes">Notes</option>
-        <option value="Stationery">Stationery</option>
-        <option value="Cycle">Cycle</option>
-        <option value="Furniture">Furniture</option>
-        <option value="Other">Other</option>
-      </select>
+    <div class="row-2">
 
-      <label for="price">Price (₹) *</label>
-      <input
-        type="number"
-        id="price"
-        min="1"
-        step="0.01"
-        placeholder="Example: 500"
-        required
-      >
+      <div class="field">
+        <label for="category">Category</label>
 
-      <label for="condition">Condition *</label>
-      <select id="condition" required>
-        <option value="">Select condition</option>
-        <option value="New">New</option>
-        <option value="Like New">Like New</option>
-        <option value="Good">Good</option>
-        <option value="Fair">Fair</option>
-      </select>
+        <select id="category" required>
+          <option value="" disabled selected>
+            Select a category
+          </option>
 
+          <option value="Books">Books</option>
+          <option value="Electronics">Electronics</option>
+          <option value="Cycles">Cycles</option>
+          <option value="Furniture">Furniture</option>
+          <option value="Accessories">Accessories</option>
+          <option value="Clothing">Clothing</option>
+          <option value="Notes">Notes</option>
+          <option value="Hostel Items">Hostel Items</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="price">Price (₹)</label>
+
+        <input
+          type="number"
+          id="price"
+          min="0"
+          step="1"
+          placeholder="e.g. 350"
+          required
+        >
+      </div>
+
+    </div>
+
+    <div class="field">
       <label for="description">Description</label>
+
       <textarea
         id="description"
-        placeholder="Describe your item..."
-      ></textarea>
-
-      <label for="pickup">Pickup Location *</label>
-      <input
-        type="text"
-        id="pickup"
-        placeholder="Example: HIT Main Gate"
+        placeholder="Condition, why you're selling, any details a buyer should know..."
         required
+      ></textarea>
+    </div>
+
+    <div class="field">
+
+      <label>Photo</label>
+
+      <div
+        class="image-drop"
+        id="imageDrop"
+        onclick="document.getElementById('imageInput').click()"
       >
 
-      <label for="photo">Product Photo *</label>
+        <span id="dropText">
+          Click to upload a photo of the item
+        </span>
+
+        <img
+          id="previewImg"
+          alt="Product Preview"
+        >
+
+      </div>
+
       <input
         type="file"
-        id="photo"
-        accept="image/jpeg,image/png"
+        id="imageInput"
+        accept="image/jpeg,image/png,image/webp"
+        style="display:none"
         required
       >
 
-      <p class="note">
-        Maximum photo size: 5 MB. Please use a clear photo of the item.
-      </p>
+    </div>
 
-      <button
-        type="submit"
-        class="submit-btn"
-        id="submitBtn"
-      >
-        Post Item
-      </button>
+    <div id="statusMsg" class="status-msg"></div>
 
-    </form>
+    <button
+      type="submit"
+      class="submit-btn"
+      id="submitBtn"
+    >
+      Publish Listing
+    </button>
 
-    <div id="message"></div>
-
-    <a href="index.html" class="back-btn">
-      ← Back to Marketplace
-    </a>
-
-  </div>
+  </form>
 
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
 
@@ -218,211 +354,509 @@ const SUPABASE_URL =
 const SUPABASE_KEY =
   "sb_publishable_i25Oy3Rbnzr3S45H4KzQyg_dLeEd3YH";
 
-const client =
+const supabaseClient =
   supabase.createClient(
     SUPABASE_URL,
     SUPABASE_KEY
   );
 
 
+// ============================================
+// IMPORTANT: YOUR EXISTING STORAGE BUCKET
+// ============================================
+
+const IMAGE_BUCKET = "product-images";
+
+
+let currentSession = null;
+
+
+// ============================================
+// AUTH + VERIFICATION CHECK
+// ============================================
+
+async function checkUser() {
+
+  let session = null;
+  let error = null;
+
+  // Give Supabase time to restore login session
+  for (let attempt = 0; attempt < 10; attempt++) {
+
+    const result =
+      await supabaseClient.auth.getSession();
+
+    session = result.data.session;
+    error = result.error;
+
+    if (error || session) {
+      break;
+    }
+
+    await new Promise(resolve =>
+      setTimeout(resolve, 150)
+    );
+  }
+
+  // Not logged in
+  if (error || !session) {
+
+    window.location.replace("login.html");
+
+    return false;
+  }
+
+
+  // Check student verification
+  const {
+    data: profile,
+    error: profileError
+  } = await supabaseClient
+    .from("profiles")
+    .select("verification_status")
+    .eq("id", session.user.id)
+    .maybeSingle();
+
+
+  if (
+    profileError ||
+    !profile ||
+    profile.verification_status !== "VERIFIED"
+  ) {
+
+    window.location.replace("index.html");
+
+    return false;
+  }
+
+
+  currentSession = session;
+
+  return true;
+}
+
+
+// Run authentication check
+checkUser();
+
+
+// ============================================
+// IMAGE PREVIEW
+// ============================================
+
+const imageInput =
+  document.getElementById("imageInput");
+
+const previewImg =
+  document.getElementById("previewImg");
+
+const dropText =
+  document.getElementById("dropText");
+
+const imageDrop =
+  document.getElementById("imageDrop");
+
+
+imageInput.addEventListener(
+  "change",
+  function () {
+
+    const file = imageInput.files[0];
+
+    if (!file) {
+      return;
+    }
+
+
+    // Maximum image size: 5 MB
+    if (file.size > 5 * 1024 * 1024) {
+
+      alert("Image size must be less than 5 MB.");
+
+      imageInput.value = "";
+
+      return;
+    }
+
+
+    // Check image type
+    const allowedTypes = [
+      "image/jpeg",
+      "image/png",
+      "image/webp"
+    ];
+
+    if (!allowedTypes.includes(file.type)) {
+
+      alert(
+        "Please select a JPG, PNG or WEBP image."
+      );
+
+      imageInput.value = "";
+
+      return;
+    }
+
+
+    // Show preview
+    previewImg.src =
+      URL.createObjectURL(file);
+
+    previewImg.style.display = "block";
+
+    dropText.style.display = "none";
+
+    imageDrop.classList.add("has-image");
+  }
+);
+
+
+// ============================================
+// STATUS MESSAGE
+// ============================================
+
+const statusMsg =
+  document.getElementById("statusMsg");
+
+
+function showStatus(type, message) {
+
+  statusMsg.className =
+    "status-msg " + type;
+
+  statusMsg.textContent =
+    message;
+
+  statusMsg.style.display =
+    "block";
+}
+
+
+// ============================================
+// FORM SUBMIT
+// ============================================
+
 const form =
-  document.getElementById("sellForm");
+  document.getElementById("listingForm");
 
 const submitBtn =
   document.getElementById("submitBtn");
 
-const message =
-  document.getElementById("message");
+
+form.addEventListener(
+  "submit",
+  async function (e) {
+
+    e.preventDefault();
 
 
-function showMessage(text, success = false) {
+    // ----------------------------------------
+    // Get current session again
+    // ----------------------------------------
 
-  message.style.display = "block";
-  message.textContent = text;
-
-  message.style.background =
-    success ? "#d1e7dd" : "#f8d7da";
-
-  message.style.color =
-    success ? "#0f5132" : "#842029";
-}
-
-
-form.addEventListener("submit", async function(event) {
-
-  event.preventDefault();
-
-  submitBtn.disabled = true;
-  submitBtn.textContent = "Posting...";
-
-  message.style.display = "none";
-
-
-  try {
-
-    // Check logged-in user
     const {
-      data: { user },
-      error: userError
-    } = await client.auth.getUser();
+      data: { session },
+      error: sessionError
+    } = await supabaseClient.auth.getSession();
 
 
-    if (userError || !user) {
+    if (sessionError || !session) {
 
-      throw new Error(
-        "Please login before selling an item."
+      showStatus(
+        "error",
+        "Your login session has expired. Please login again."
       );
 
+      return;
     }
 
 
-    // Check verification status
-    const {
-      data: profile,
-      error: profileError
-    } = await client
-      .from("profiles")
-      .select("verification_status")
-      .eq("id", user.id)
-      .single();
+    currentSession = session;
 
 
-    if (profileError) {
-      throw profileError;
-    }
-
-
-    if (profile.verification_status !== "VERIFIED") {
-
-      throw new Error(
-        "Only verified students can sell items."
-      );
-
-    }
-
+    // ----------------------------------------
+    // Get form values
+    // ----------------------------------------
 
     const title =
-      document.getElementById("title").value.trim();
+      document.getElementById("title")
+        .value
+        .trim();
 
     const category =
-      document.getElementById("category").value;
+      document.getElementById("category")
+        .value;
 
     const price =
-      Number(document.getElementById("price").value);
-
-    const condition =
-      document.getElementById("condition").value;
+      parseFloat(
+        document.getElementById("price").value
+      );
 
     const description =
-      document.getElementById("description").value.trim();
+      document.getElementById("description")
+        .value
+        .trim();
 
-    const pickup =
-      document.getElementById("pickup").value.trim();
-
-    const photo =
-      document.getElementById("photo").files[0];
+    const file =
+      imageInput.files[0];
 
 
-    if (!photo) {
+    // ----------------------------------------
+    // Validation
+    // ----------------------------------------
 
-      throw new Error(
-        "Please select a product photo."
+    if (!title) {
+
+      showStatus(
+        "error",
+        "Please enter the item title."
       );
 
+      return;
     }
 
 
-    if (photo.size > 5 * 1024 * 1024) {
+    if (!category) {
 
-      throw new Error(
-        "Photo must be smaller than 5 MB."
+      showStatus(
+        "error",
+        "Please select a category."
       );
 
+      return;
     }
 
 
-    // Create unique file name
-    const extension =
-      photo.name.split(".").pop().toLowerCase();
+    if (isNaN(price) || price < 0) {
 
-    const fileName =
-      `${Date.now()}_${crypto.randomUUID()}.${extension}`;
+      showStatus(
+        "error",
+        "Please enter a valid price."
+      );
 
-    const filePath =
-      `${user.id}/${fileName}`;
-
-
-    // Upload product image
-    const {
-      error: uploadError
-    } = await client.storage
-      .from("product-images")
-      .upload(filePath, photo, {
-        contentType: photo.type,
-        upsert: false
-      });
-
-
-    if (uploadError) {
-      throw uploadError;
+      return;
     }
 
 
-    // Create product record
-    const {
-      data: product,
-      error: productError
-    } = await client
-      .from("products")
-      .insert({
-        seller_id: user.id,
-        title: title,
-        category: category,
-        price: price,
-        condition: condition,
-        description: description,
-        pickup_location: pickup,
-        status: "AVAILABLE"
-      })
-      .select()
-      .single();
+    if (!description) {
 
+      showStatus(
+        "error",
+        "Please enter a description."
+      );
 
-    if (productError) {
-
-      // Remove uploaded image if database insert fails
-      await client.storage
-        .from("product-images")
-        .remove([filePath]);
-
-      throw productError;
+      return;
     }
 
 
-    showMessage(
-      "Item posted successfully! Your item is now available in the marketplace.",
-      true
-    );
+    if (!file) {
+
+      showStatus(
+        "error",
+        "Please add a photo of the item."
+      );
+
+      return;
+    }
 
 
-    form.reset();
+    // ----------------------------------------
+    // Disable button
+    // ----------------------------------------
+
+    submitBtn.disabled = true;
+
+    submitBtn.textContent =
+      "Publishing...";
+
+    statusMsg.style.display =
+      "none";
 
 
-  } catch (error) {
+    let uploadedFilePath = null;
 
-    console.error(error);
 
-    showMessage(
-      "Error: " + error.message
-    );
+    try {
+
+      // ======================================
+      // 1. UPLOAD PRODUCT IMAGE
+      // ======================================
+
+      const fileExtension =
+        file.name
+          .split(".")
+          .pop()
+          .toLowerCase();
+
+
+      const filePath =
+        `${currentSession.user.id}/${Date.now()}.${fileExtension}`;
+
+
+      uploadedFilePath =
+        filePath;
+
+
+      const {
+        error: uploadError
+      } = await supabaseClient
+        .storage
+        .from(IMAGE_BUCKET)
+        .upload(
+          filePath,
+          file,
+          {
+            upsert: false,
+            contentType: file.type
+          }
+        );
+
+
+      if (uploadError) {
+
+        throw new Error(
+          "Image upload failed: " +
+          uploadError.message
+        );
+      }
+
+
+      // ======================================
+      // 2. GET PUBLIC IMAGE URL
+      // ======================================
+
+      const {
+        data: publicUrlData
+      } = supabaseClient
+        .storage
+        .from(IMAGE_BUCKET)
+        .getPublicUrl(filePath);
+
+
+      const imageUrl =
+        publicUrlData.publicUrl;
+
+
+      // ======================================
+      // 3. INSERT LISTING INTO DATABASE
+      // ======================================
+
+      const {
+        error: insertError
+      } = await supabaseClient
+        .from("listings")
+        .insert({
+
+          seller_id:
+            currentSession.user.id,
+
+          title:
+            title,
+
+          description:
+            description,
+
+          category:
+            category,
+
+          price:
+            price,
+
+          image_url:
+            imageUrl,
+
+          status:
+            "ACTIVE"
+
+        });
+
+
+      if (insertError) {
+
+        throw new Error(
+          "Listing creation failed: " +
+          insertError.message
+        );
+      }
+
+
+      // ======================================
+      // SUCCESS
+      // ======================================
+
+      showStatus(
+        "success",
+        "Your listing has been published successfully!"
+      );
+
+
+      // Reset form
+      form.reset();
+
+      previewImg.style.display =
+        "none";
+
+      dropText.style.display =
+        "block";
+
+      imageDrop.classList.remove(
+        "has-image"
+      );
+
+
+      // Go to marketplace
+      setTimeout(
+        function () {
+
+          window.location.href =
+            "marketplace.html";
+
+        },
+        1200
+      );
+
+
+    } catch (err) {
+
+      console.error(
+        "Publish listing error:",
+        err
+      );
+
+
+      // --------------------------------------
+      // Delete uploaded image if DB insert
+      // failed
+      // --------------------------------------
+
+      if (uploadedFilePath) {
+
+        await supabaseClient
+          .storage
+          .from(IMAGE_BUCKET)
+          .remove([
+            uploadedFilePath
+          ]);
+      }
+
+
+      showStatus(
+        "error",
+        err.message ||
+        "Something went wrong. Please try again."
+      );
+
+
+    } finally {
+
+      submitBtn.disabled = false;
+
+      submitBtn.textContent =
+        "Publish Listing";
+    }
 
   }
-
-
-  submitBtn.disabled = false;
-  submitBtn.textContent = "Post Item";
-
-});
+);
 
 </script>
 
