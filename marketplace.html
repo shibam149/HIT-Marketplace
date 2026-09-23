@@ -756,7 +756,11 @@
 
                         return `
 
-                            <article class="product-card">
+                            <article
+    class="product-card"
+    onclick="openProduct('${product.id}')"
+    style="cursor:pointer;"
+>
 
                                 ${image}
 
@@ -829,6 +833,17 @@
                     }
                 ).join("");
 
+        }
+
+
+        /* =========================
+           OPEN PRODUCT DETAILS
+        ========================= */
+
+        function openProduct(productId) {
+            window.location.href =
+                "product.html?id=" +
+                encodeURIComponent(productId);
         }
 
 

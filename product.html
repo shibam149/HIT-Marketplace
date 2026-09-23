@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Product Details - HIT Marketplace</title>
+
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f5f7fb;
+            color: #222;
+        }
+
+        /* NAVBAR */
+        .navbar {
+            background: #ffffff;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 6%;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2563eb;
+        }
+
+        .back-btn {
+            border: none;
+            background: #eef2ff;
+            color: #2563eb;
+            padding: 10px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .back-btn:hover {
+            background: #dbeafe;
+        }
+
+        /* MAIN */
+        .container {
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .product-box {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+
+        /* IMAGE */
+        .image-section {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f8fafc;
+            border-radius: 14px;
+            min-height: 420px;
+            overflow: hidden;
+        }
+
+        .product-image {
+            width: 100%;
+            max-height: 420px;
+            object-fit: contain;
+            border-radius: 12px;
+        }
+
+        .no-image {
+            color: #777;
+            font-size: 18px;
+        }
+
+        /* DETAILS */
+        .details-section {
+            padding: 10px;
+        }
+
+        .category {
+            display: inline-block;
+            background: #e0e7ff;
+            color: #3730a3;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            margin-bottom: 15px;
+        }
+
+        .title {
+            font-size: 32px;
+            margin-bottom: 12px;
+            color: #111827;
+        }
+
+        .price {
+            font-size: 30px;
+            font-weight: bold;
+            color: #16a34a;
+            margin-bottom: 20px;
+        }
+
+        .description-title {
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+
+        .description {
+            color: #555;
+            line-height: 1.7;
+            margin-bottom: 25px;
+            white-space: pre-wrap;
+        }
+
+        /* SELLER */
+        .seller-box {
+            background: #f8fafc;
+            padding: 18px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+        }
+
+        .seller-title {
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+
+        .seller-name {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .student-id {
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .verified {
+            display: inline-block;
+            background: #dcfce7;
+            color: #15803d;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        /* BUTTON */
+        .chat-btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            background: #2563eb;
+            color: white;
+            font-size: 17px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .chat-btn:hover {
+            background: #1d4ed8;
+        }
+
+        .own-listing {
+            background: #64748b;
+            cursor: default;
+        }
+
+        /* LOADING */
+        .loading {
+            text-align: center;
+            padding: 80px 20px;
+            font-size: 20px;
+            color: #666;
+        }
+
+        .error {
+            text-align: center;
+            padding: 80px 20px;
+        }
+
+        .error h2 {
+            margin-bottom: 10px;
+        }
+
+        .error p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* MOBILE */
+        @media (max-width: 768px) {
+
+            .navbar {
+                padding: 0 20px;
+            }
+
+            .product-box {
+                grid-template-columns: 1fr;
+                padding: 20px;
+                gap: 25px;
+            }
+
+            .image-section {
+                min-height: 300px;
+            }
+
+            .title {
+                font-size: 26px;
+            }
+
+            .price {
+                font-size: 26px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <div class="logo">
+            HIT Marketplace
+        </div>
+
+        <button class="back-btn" onclick="goBack()">
+            ← Back
+        </button>
+    </nav>
+
+
+    <!-- LOADING -->
+    <div id="loading" class="loading">
+        Loading product...
+    </div>
+
+
+    <!-- ERROR -->
+    <div id="errorBox" class="error hidden">
+        <h2>Product not found</h2>
+        <p id="errorMessage">
+            This product may have been removed or is unavailable.
+        </p>
+
+        <button class="back-btn" onclick="goBack()">
+            ← Back to Marketplace
+        </button>
+    </div>
+
+
+    <!-- PRODUCT -->
+    <main id="productContainer" class="container hidden">
+
+        <div class="product-box">
+
+            <!-- IMAGE -->
+            <div class="image-section">
+
+                <img
+                    id="productImage"
+                    class="product-image hidden"
+                    alt="Product image"
+                >
+
+                <div id="noImage" class="no-image hidden">
+                    No image available
+                </div>
+
+            </div>
+
+
+            <!-- DETAILS -->
+            <div class="details-section">
+
+                <span id="productCategory" class="category">
+                    Category
+                </span>
+
+                <h1 id="productTitle" class="title">
+                    Product Name
+                </h1>
+
+                <div id="productPrice" class="price">
+                    ₹0
+                </div>
+
+
+                <h3 class="description-title">
+                    Description
+                </h3>
+
+                <p id="productDescription" class="description">
+                    No description available.
+                </p>
+
+                <!-- CHAT WITH SELLER -->
+                <button
+                    id="chatButtonTop"
+                    class="chat-btn"
+                    onclick="chatWithSeller()"
+                    style="margin-bottom: 25px;"
+                >
+                    💬 Chat with Seller
+                </button>
+
+
+                <!-- SELLER -->
+                <div class="seller-box">
+
+                    <div class="seller-title">
+                        👤 Seller Information
+                    </div>
+
+                    <div id="sellerName" class="seller-name">
+                        Loading...
+                    </div>
+
+                    <div id="sellerStudentId" class="student-id">
+                        Student ID: -
+                    </div>
+
+                    <span class="verified">
+                        ✓ Verified HIT Student
+                    </span>
+
+                </div>
+
+
+                <!-- CHAT -->
+                <button
+                    id="chatButton"
+                    class="chat-btn"
+                    onclick="chatWithSeller()"
+                    style="display:none;"
+                >
+                    💬 Chat with Seller
+                </button>
+
+            </div>
+
+        </div>
+
+    </main>
+
+
+    <script>
+
+        // ==========================================
+        // SUPABASE CONFIGURATION
+        // ==========================================
+
+        const SUPABASE_URL =
+            "https://ziyyqhnmhbwomibpsenf.supabase.co";
+
+        const SUPABASE_KEY =
+            "sb_publishable_i25Oy3Rbnzr3S45H4KzQyg_dLeEd3YH";
+
+        const supabaseClient =
+            window.supabase.createClient(
+                SUPABASE_URL,
+                SUPABASE_KEY
+            );
+
+
+        // ==========================================
+        // VARIABLES
+        // ==========================================
+
+        let currentUser = null;
+        let currentListing = null;
+        let currentSeller = null;
+
+
+        // ==========================================
+        // PAGE LOAD
+        // ==========================================
+
+        document.addEventListener("DOMContentLoaded", async () => {
+
+            await loadProduct();
+
+        });
+
+
+        // ==========================================
+        // LOAD PRODUCT
+        // ==========================================
+
+        async function loadProduct() {
+
+            try {
+
+                // Check login
+                const {
+                    data: {
+                        session
+                    }
+                } = await supabaseClient.auth.getSession();
+
+
+                if (!session) {
+
+                    window.location.href = "login.html";
+                    return;
+
+                }
+
+
+                currentUser = session.user;
+
+
+                // Check verified student
+                const {
+                    data: profile,
+                    error: profileError
+                } = await supabaseClient
+                    .from("profiles")
+                    .select("verification_status")
+                    .eq("id", currentUser.id)
+                    .single();
+
+
+                if (profileError) {
+
+                    console.error(profileError);
+
+                    showError(
+                        "Unable to check your verification status."
+                    );
+
+                    return;
+
+                }
+
+
+                if (
+                    profile.verification_status !== "VERIFIED"
+                ) {
+
+                    alert(
+                        "Your account must be verified to view marketplace products."
+                    );
+
+                    window.location.href = "verify.html";
+                    return;
+
+                }
+
+
+                // Get product ID from URL
+                const params =
+                    new URLSearchParams(
+                        window.location.search
+                    );
+
+                const listingId =
+                    params.get("id");
+
+
+                if (!listingId) {
+
+                    showError(
+                        "No product ID was provided."
+                    );
+
+                    return;
+
+                }
+
+
+                // Load listing
+                const {
+                    data: listing,
+                    error: listingError
+                } = await supabaseClient
+                    .from("listings")
+                    .select("*")
+                    .eq("id", listingId)
+                    .single();
+
+
+                if (listingError || !listing) {
+
+                    console.error(listingError);
+
+                    showError(
+                        "This product could not be found."
+                    );
+
+                    return;
+
+                }
+
+
+                currentListing = listing;
+
+
+                // Load seller profile
+                const {
+                    data: seller,
+                    error: sellerError
+                } = await supabaseClient
+                    .from("profiles")
+                    .select(
+                        "full_name, student_id, verification_status"
+                    )
+                    .eq("id", listing.seller_id)
+                    .single();
+
+
+                if (sellerError) {
+
+                    console.error(sellerError);
+
+                }
+
+
+                currentSeller = seller;
+
+
+                // Display product
+                displayProduct(
+                    listing,
+                    seller
+                );
+
+            }
+
+            catch (error) {
+
+                console.error(error);
+
+                showError(
+                    "Something went wrong while loading the product."
+                );
+
+            }
+
+        }
+
+
+        // ==========================================
+        // DISPLAY PRODUCT
+        // ==========================================
+
+        function displayProduct(
+            listing,
+            seller
+        ) {
+
+            document.getElementById(
+                "productTitle"
+            ).textContent =
+                listing.title || "Untitled Product";
+
+
+            document.getElementById(
+                "productCategory"
+            ).textContent =
+                listing.category || "Others";
+
+
+            document.getElementById(
+                "productPrice"
+            ).textContent =
+                "₹" +
+                Number(listing.price || 0)
+                    .toLocaleString("en-IN");
+
+
+            document.getElementById(
+                "productDescription"
+            ).textContent =
+                listing.description ||
+                "No description available.";
+
+
+            // Seller
+            document.getElementById(
+                "sellerName"
+            ).textContent =
+                seller?.full_name ||
+                "HIT Student";
+
+
+            document.getElementById(
+                "sellerStudentId"
+            ).textContent =
+                "Student ID: " +
+                (seller?.student_id || "-");
+
+
+            // Image
+            const image =
+                document.getElementById(
+                    "productImage"
+                );
+
+            const noImage =
+                document.getElementById(
+                    "noImage"
+                );
+
+
+            if (listing.image_url) {
+
+                image.src =
+                    listing.image_url;
+
+                image.classList.remove(
+                    "hidden"
+                );
+
+                noImage.classList.add(
+                    "hidden"
+                );
+
+            }
+            else {
+
+                image.classList.add(
+                    "hidden"
+                );
+
+                noImage.classList.remove(
+                    "hidden"
+                );
+
+            }
+
+
+            // Own listing
+            const chatButton =
+                document.getElementById(
+                    "chatButton"
+                );
+
+
+            if (
+                listing.seller_id ===
+                currentUser.id
+            ) {
+
+                chatButton.textContent =
+                    "Your Listing";
+
+                chatButton.classList.add(
+                    "own-listing"
+                );
+
+                chatButton.onclick = null;
+
+            }
+
+
+            // Show page
+            document.getElementById(
+                "loading"
+            ).classList.add(
+                "hidden"
+            );
+
+
+            document.getElementById(
+                "productContainer"
+            ).classList.remove(
+                "hidden"
+            );
+
+        }
+
+
+        // ==========================================
+        // CHAT WITH SELLER
+        // ==========================================
+
+        function chatWithSeller() {
+
+            if (!currentListing) {
+
+                return;
+
+            }
+
+
+            if (
+                currentListing.seller_id ===
+                currentUser.id
+            ) {
+
+                return;
+
+            }
+
+
+            const listingId =
+                encodeURIComponent(
+                    currentListing.id
+                );
+
+
+            const sellerId =
+                encodeURIComponent(
+                    currentListing.seller_id
+                );
+
+
+            window.location.href =
+                "chat.html?listing=" +
+                listingId +
+                "&seller=" +
+                sellerId;
+
+        }
+
+
+        // ==========================================
+        // BACK
+        // ==========================================
+
+        function goBack() {
+
+            window.location.href =
+                "marketplace.html";
+
+        }
+
+
+        // ==========================================
+        // ERROR
+        // ==========================================
+
+        function showError(message) {
+
+            document.getElementById(
+                "loading"
+            ).classList.add(
+                "hidden"
+            );
+
+
+            document.getElementById(
+                "productContainer"
+            ).classList.add(
+                "hidden"
+            );
+
+
+            document.getElementById(
+                "errorMessage"
+            ).textContent =
+                message;
+
+
+            document.getElementById(
+                "errorBox"
+            ).classList.remove(
+                "hidden"
+            );
+
+        }
+
+    </script>
+
+</body>
+</html>

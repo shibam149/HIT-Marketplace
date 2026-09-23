@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Chat - HIT Marketplace</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f5f7fb;
+            color: #172033;
+        }
+
+        .navbar {
+            height: 70px;
+            background: white;
+            border-bottom: 1px solid #e5eaf1;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 0 6%;
+        }
+
+        .logo {
+            color: #2563eb;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .back-btn {
+            border: none;
+            background: #eef2ff;
+            color: #2563eb;
+
+            padding: 10px 18px;
+            border-radius: 8px;
+
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .chat-container {
+            width: 92%;
+            max-width: 850px;
+
+            height: calc(100vh - 110px);
+
+            margin: 20px auto;
+
+            background: white;
+
+            border-radius: 14px;
+
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+
+            display: flex;
+            flex-direction: column;
+
+            overflow: hidden;
+        }
+
+        .chat-header {
+            padding: 18px 22px;
+
+            border-bottom: 1px solid #e5eaf1;
+        }
+
+        .chat-title {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .chat-subtitle {
+            margin-top: 5px;
+
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .messages {
+            flex: 1;
+
+            padding: 20px;
+
+            overflow-y: auto;
+
+            background: #f8fafc;
+        }
+
+        .message-row {
+            display: flex;
+            margin-bottom: 14px;
+        }
+
+        .message-row.mine {
+            justify-content: flex-end;
+        }
+
+        .message {
+            max-width: 70%;
+
+            padding: 11px 14px;
+
+            border-radius: 13px;
+
+            background: white;
+
+            border: 1px solid #e5eaf1;
+
+            word-wrap: break-word;
+        }
+
+        .message-row.mine .message {
+            background: #2563eb;
+            color: white;
+            border: none;
+        }
+
+        .message-time {
+            display: block;
+
+            margin-top: 5px;
+
+            font-size: 10px;
+
+            opacity: 0.7;
+        }
+
+        .chat-input-area {
+            display: flex;
+
+            gap: 10px;
+
+            padding: 15px;
+
+            border-top: 1px solid #e5eaf1;
+
+            background: white;
+        }
+
+        #messageInput {
+            flex: 1;
+
+            border: 1px solid #d7dfea;
+
+            border-radius: 10px;
+
+            padding: 12px 14px;
+
+            font-size: 14px;
+
+            outline: none;
+        }
+
+        #messageInput:focus {
+            border-color: #2563eb;
+        }
+
+        .send-btn {
+            border: none;
+
+            background: #2563eb;
+            color: white;
+
+            padding: 0 22px;
+
+            border-radius: 10px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+        }
+
+        .send-btn:hover {
+            background: #1d4ed8;
+        }
+
+        .send-btn:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+        }
+
+        .loading,
+        .empty {
+            text-align: center;
+
+            padding: 50px 20px;
+
+            color: #64748b;
+        }
+
+        .error {
+            text-align: center;
+
+            padding: 40px 20px;
+
+            color: #b91c1c;
+        }
+
+        @media (max-width: 600px) {
+
+            .navbar {
+                padding: 0 20px;
+            }
+
+            .logo {
+                font-size: 20px;
+            }
+
+            .chat-container {
+                width: 100%;
+
+                height: calc(100vh - 70px);
+
+                margin: 0;
+
+                border-radius: 0;
+            }
+
+            .message {
+                max-width: 82%;
+            }
+        }
+    </style>
+</head>
+
+
+<body>
+
+    <!-- NAVBAR -->
+
+    <nav class="navbar">
+
+        <div class="logo">
+            HIT Marketplace
+        </div>
+
+        <button
+            class="back-btn"
+            onclick="goBack()"
+        >
+            ← My Chats
+        </button>
+
+    </nav>
+
+
+    <!-- CHAT -->
+
+    <main class="chat-container">
+
+        <div class="chat-header">
+
+            <div
+                id="chatTitle"
+                class="chat-title"
+            >
+                Chat
+            </div>
+
+            <div
+                id="chatSubtitle"
+                class="chat-subtitle"
+            >
+                Loading...
+            </div>
+
+        </div>
+
+
+        <div
+            id="messages"
+            class="messages"
+        >
+
+            <div class="loading">
+                Loading messages...
+            </div>
+
+        </div>
+
+
+        <div class="chat-input-area">
+
+            <input
+                type="text"
+                id="messageInput"
+                placeholder="Type your message..."
+                autocomplete="off"
+            >
+
+            <button
+                id="sendButton"
+                class="send-btn"
+                onclick="sendMessage()"
+            >
+                Send
+            </button>
+
+        </div>
+
+    </main>
+
+
+    <script>
+
+        // ==========================================
+        // SUPABASE
+        // ==========================================
+
+        const SUPABASE_URL =
+            "https://ziyyqhnmhbwomibpsenf.supabase.co";
+
+        const SUPABASE_KEY =
+            "sb_publishable_i25Oy3Rbnzr3S45H4KzQyg_dLeEd3YH";
+
+        const supabaseClient =
+            window.supabase.createClient(
+                SUPABASE_URL,
+                SUPABASE_KEY
+            );
+
+
+        // ==========================================
+        // VARIABLES
+        // ==========================================
+
+        let currentUser = null;
+
+        let listingId = null;
+
+        let otherUserId = null;
+
+        let buyerId = null;
+
+        let sellerId = null;
+
+        let realtimeChannel = null;
+
+
+        // ==========================================
+        // PAGE LOAD
+        // ==========================================
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            async function () {
+
+                await initializeChat();
+
+            }
+        );
+
+
+        // ==========================================
+        // INITIALIZE
+        // ==========================================
+
+        async function initializeChat() {
+
+            try {
+
+                // Check login
+
+                const {
+                    data: {
+                        session
+                    }
+                } =
+                    await supabaseClient
+                        .auth
+                        .getSession();
+
+
+                if (!session) {
+
+                    window.location.href =
+                        "login.html";
+
+                    return;
+
+                }
+
+
+                currentUser =
+                    session.user;
+
+
+                // Read URL
+
+                const params =
+                    new URLSearchParams(
+                        window.location.search
+                    );
+
+
+                listingId =
+                    params.get("listing");
+
+
+                otherUserId =
+                    params.get("seller");
+
+
+                if (!listingId) {
+
+                    showError(
+                        "No product was selected."
+                    );
+
+                    return;
+
+                }
+
+
+                // ==================================
+                // LOAD LISTING
+                // ==================================
+
+                const {
+                    data: listing,
+                    error: listingError
+                } =
+                    await supabaseClient
+                        .from("listings")
+                        .select(
+                            "id, title, seller_id"
+                        )
+                        .eq(
+                            "id",
+                            listingId
+                        )
+                        .single();
+
+
+                if (
+                    listingError ||
+                    !listing
+                ) {
+
+                    console.error(
+                        listingError
+                    );
+
+                    showError(
+                        "Product not found."
+                    );
+
+                    return;
+
+                }
+
+
+                // Seller is always listing.seller_id
+
+                sellerId =
+                    listing.seller_id;
+
+
+                // ==================================
+                // DETERMINE BUYER
+                // ==================================
+
+                if (
+                    currentUser.id ===
+                    sellerId
+                ) {
+
+                    // Current user is seller
+
+                    buyerId =
+                        otherUserId;
+
+                } else {
+
+                    // Current user is buyer
+
+                    buyerId =
+                        currentUser.id;
+
+                }
+
+
+                // Validate buyer
+
+                if (!buyerId) {
+
+                    showError(
+                        "Buyer information is missing."
+                    );
+
+                    return;
+
+                }
+
+
+                // ==================================
+                // LOAD OTHER USER
+                // ==================================
+
+                const otherId =
+                    currentUser.id === sellerId
+                        ? buyerId
+                        : sellerId;
+
+
+                const {
+                    data: profile,
+                    error: profileError
+                } =
+                    await supabaseClient
+                        .from("profiles")
+                        .select(
+                            "full_name, student_id"
+                        )
+                        .eq(
+                            "id",
+                            otherId
+                        )
+                        .maybeSingle();
+
+
+                if (profileError) {
+
+                    console.error(
+                        profileError
+                    );
+
+                }
+
+
+                document.getElementById(
+                    "chatTitle"
+                ).textContent =
+                    "Chat with " +
+                    (
+                        profile?.full_name ||
+                        "HIT Student"
+                    );
+
+
+                document.getElementById(
+                    "chatSubtitle"
+                ).textContent =
+                    "Product: " +
+                    (
+                        listing.title ||
+                        "Item"
+                    );
+
+
+                // ==================================
+                // LOAD MESSAGES
+                // ==================================
+
+                await loadMessages();
+
+
+                // ==================================
+                // REALTIME
+                // ==================================
+
+                subscribeToMessages();
+
+
+                // ==================================
+                // ENTER TO SEND
+                // ==================================
+
+                document
+                    .getElementById(
+                        "messageInput"
+                    )
+                    .addEventListener(
+                        "keydown",
+                        function(event) {
+
+                            if (
+                                event.key ===
+                                "Enter"
+                            ) {
+
+                                event.preventDefault();
+
+                                sendMessage();
+
+                            }
+
+                        }
+                    );
+
+            }
+
+            catch (error) {
+
+                console.error(error);
+
+                showError(
+                    "Something went wrong."
+                );
+
+            }
+
+        }
+
+
+        // ==========================================
+        // LOAD MESSAGES
+        // ==========================================
+
+        async function loadMessages() {
+
+            const {
+                data,
+                error
+            } =
+                await supabaseClient
+                    .from("chats")
+                    .select("*")
+                    .eq(
+                        "listing_id",
+                        listingId
+                    )
+                    .or(
+                        "and(buyer_id.eq." +
+                        buyerId +
+                        ",seller_id.eq." +
+                        sellerId +
+                        "),and(buyer_id.eq." +
+                        sellerId +
+                        ",seller_id.eq." +
+                        buyerId +
+                        ")"
+                    )
+                    .order(
+                        "created_at",
+                        {
+                            ascending: true
+                        }
+                    );
+
+
+            if (error) {
+
+                console.error(error);
+
+                showError(
+                    "Could not load messages: " +
+                    error.message
+                );
+
+                return;
+
+            }
+
+
+            displayMessages(
+                data || []
+            );
+
+        }
+
+
+        // ==========================================
+        // DISPLAY MESSAGES
+        // ==========================================
+
+        function displayMessages(
+            messages
+        ) {
+
+            const container =
+                document.getElementById(
+                    "messages"
+                );
+
+
+            if (!messages.length) {
+
+                container.innerHTML = `
+                    <div class="empty">
+                        <h3>No messages yet</h3>
+                        <p>Start the conversation.</p>
+                    </div>
+                `;
+
+                return;
+
+            }
+
+
+            container.innerHTML =
+                messages.map(
+                    message => {
+
+                        // Message belongs to current user
+
+                        const mine =
+                            (
+                                message.buyer_id ===
+                                currentUser.id
+                            ) ||
+                            (
+                                message.seller_id ===
+                                currentUser.id
+                            );
+
+
+                        const time =
+                            new Date(
+                                message.created_at
+                            ).toLocaleTimeString(
+                                "en-IN",
+                                {
+                                    hour: "numeric",
+                                    minute: "2-digit"
+                                }
+                            );
+
+
+                        return `
+
+                            <div class="message-row ${
+                                mine
+                                    ? "mine"
+                                    : ""
+                            }">
+
+                                <div class="message">
+
+                                    ${escapeHtml(
+                                        message.message
+                                    )}
+
+                                    <span class="message-time">
+                                        ${time}
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                        `;
+
+                    }
+                ).join("");
+
+
+            container.scrollTop =
+                container.scrollHeight;
+
+        }
+
+
+        // ==========================================
+        // SEND MESSAGE
+        // ==========================================
+
+        async function sendMessage() {
+
+            const input =
+                document.getElementById(
+                    "messageInput"
+                );
+
+
+            const button =
+                document.getElementById(
+                    "sendButton"
+                );
+
+
+            const message =
+                input.value.trim();
+
+
+            if (!message) {
+
+                return;
+
+            }
+
+
+            if (
+                !buyerId ||
+                !sellerId ||
+                !listingId
+            ) {
+
+                alert(
+                    "Chat information is incomplete."
+                );
+
+                return;
+
+            }
+
+
+            button.disabled = true;
+
+
+            try {
+
+                const {
+                    error
+                } =
+                    await supabaseClient
+                        .from("chats")
+                        .insert({
+
+                            listing_id:
+                                listingId,
+
+                            buyer_id:
+                                buyerId,
+
+                            seller_id:
+                                sellerId,
+
+                            message:
+                                message
+
+                        });
+
+
+                if (error) {
+
+                    console.error(error);
+
+                    alert(
+                        "Message failed: " +
+                        error.message
+                    );
+
+                    return;
+
+                }
+
+
+                input.value = "";
+
+
+                await loadMessages();
+
+            }
+
+            finally {
+
+                button.disabled = false;
+
+                input.focus();
+
+            }
+
+        }
+
+
+        // ==========================================
+        // REALTIME
+        // ==========================================
+
+        function subscribeToMessages() {
+
+            realtimeChannel =
+                supabaseClient
+                    .channel(
+                        "chat-" +
+                        listingId +
+                        "-" +
+                        currentUser.id
+                    )
+                    .on(
+                        "postgres_changes",
+                        {
+                            event: "INSERT",
+                            schema: "public",
+                            table: "chats",
+                            filter:
+                                "listing_id=eq." +
+                                listingId
+                        },
+                        function () {
+
+                            loadMessages();
+
+                        }
+                    )
+                    .subscribe();
+
+        }
+
+
+        // ==========================================
+        // BACK
+        // ==========================================
+
+        function goBack() {
+
+            window.location.href =
+                "chats.html";
+
+        }
+
+
+        // ==========================================
+        // ERROR
+        // ==========================================
+
+        function showError(
+            message
+        ) {
+
+            document.getElementById(
+                "messages"
+            ).innerHTML = `
+
+                <div class="error">
+
+                    <h3>
+                        Chat unavailable
+                    </h3>
+
+                    <p>
+                        ${escapeHtml(message)}
+                    </p>
+
+                </div>
+
+            `;
+
+
+            document.getElementById(
+                "messageInput"
+            ).disabled = true;
+
+
+            document.getElementById(
+                "sendButton"
+            ).disabled = true;
+
+        }
+
+
+        // ==========================================
+        // ESCAPE HTML
+        // ==========================================
+
+        function escapeHtml(value) {
+
+            return String(
+                value ?? ""
+            )
+                .replace(
+                    /&/g,
+                    "&amp;"
+                )
+                .replace(
+                    /</g,
+                    "&lt;"
+                )
+                .replace(
+                    />/g,
+                    "&gt;"
+                )
+                .replace(
+                    /"/g,
+                    "&quot;"
+                )
+                .replace(
+                    /'/g,
+                    "&#039;"
+                );
+
+        }
+
+    </script>
+
+</body>
+</html>

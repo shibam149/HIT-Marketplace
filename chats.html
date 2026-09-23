@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>My Chats - HIT Marketplace</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f5f7fb;
+            color: #172033;
+        }
+
+        /* NAVBAR */
+
+        .navbar {
+            height: 70px;
+            background: white;
+            border-bottom: 1px solid #e5eaf1;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 0 6%;
+        }
+
+        .logo {
+            color: #2563eb;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .back-btn {
+            border: none;
+            background: #eef2ff;
+            color: #2563eb;
+
+            padding: 10px 18px;
+            border-radius: 8px;
+
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        /* MAIN */
+
+        .container {
+            width: 92%;
+            max-width: 900px;
+
+            margin: 35px auto;
+        }
+
+        .heading {
+            margin-bottom: 25px;
+        }
+
+        .heading h1 {
+            font-size: 30px;
+            color: #0b376f;
+            margin-bottom: 6px;
+        }
+
+        .heading p {
+            color: #64748b;
+        }
+
+        /* CHAT LIST */
+
+        .chat-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .chat-card {
+            background: white;
+
+            border: 1px solid #e5eaf1;
+            border-radius: 12px;
+
+            padding: 18px;
+
+            cursor: pointer;
+
+            transition: 0.2s;
+        }
+
+        .chat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+        }
+
+        .chat-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            margin-bottom: 8px;
+        }
+
+        .person {
+            font-size: 17px;
+            font-weight: bold;
+        }
+
+        .time {
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        .product {
+            color: #2563eb;
+            font-size: 13px;
+            font-weight: bold;
+
+            margin-bottom: 7px;
+        }
+
+        .last-message {
+            color: #64748b;
+            font-size: 14px;
+
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* EMPTY */
+
+        .empty {
+            background: white;
+
+            border: 1px solid #e5eaf1;
+            border-radius: 12px;
+
+            text-align: center;
+
+            padding: 60px 20px;
+
+            color: #64748b;
+        }
+
+        .empty h2 {
+            color: #172033;
+            margin-bottom: 8px;
+        }
+
+        /* LOADING */
+
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: #64748b;
+        }
+
+        /* ERROR */
+
+        .error {
+            color: #b91c1c;
+            text-align: center;
+            padding: 40px;
+        }
+
+        @media (max-width: 600px) {
+
+            .navbar {
+                padding: 0 20px;
+            }
+
+            .logo {
+                font-size: 20px;
+            }
+
+            .container {
+                width: 94%;
+            }
+
+            .chat-top {
+                align-items: flex-start;
+            }
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+
+    <!-- NAVBAR -->
+
+    <nav class="navbar">
+
+        <div class="logo">
+            HIT Marketplace
+        </div>
+
+        <button
+            class="back-btn"
+            onclick="goBack()"
+        >
+            ← Marketplace
+        </button>
+
+    </nav>
+
+
+    <!-- MAIN -->
+
+    <main class="container">
+
+        <div class="heading">
+
+            <h1>
+                💬 My Chats
+            </h1>
+
+            <p>
+                Your conversations with HIT students.
+            </p>
+
+        </div>
+
+
+        <div
+            id="chatList"
+            class="chat-list"
+        >
+
+            <div class="loading">
+                Loading chats...
+            </div>
+
+        </div>
+
+    </main>
+
+
+    <script>
+
+        // ==========================================
+        // SUPABASE
+        // ==========================================
+
+        const SUPABASE_URL =
+            "https://ziyyqhnmhbwomibpsenf.supabase.co";
+
+        const SUPABASE_KEY =
+            "sb_publishable_i25Oy3Rbnzr3S45H4KzQyg_dLeEd3YH";
+
+
+        const supabaseClient =
+            window.supabase.createClient(
+                SUPABASE_URL,
+                SUPABASE_KEY
+            );
+
+
+        // ==========================================
+        // CURRENT USER
+        // ==========================================
+
+        let currentUser = null;
+
+
+        // ==========================================
+        // PAGE LOAD
+        // ==========================================
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            async function () {
+
+                await loadChats();
+
+            }
+        );
+
+
+        // ==========================================
+        // LOAD CHATS
+        // ==========================================
+
+        async function loadChats() {
+
+            try {
+
+                // Check login
+
+                const {
+                    data: {
+                        session
+                    }
+                } =
+                    await supabaseClient
+                        .auth
+                        .getSession();
+
+
+                if (!session) {
+
+                    window.location.href =
+                        "login.html";
+
+                    return;
+
+                }
+
+
+                currentUser =
+                    session.user;
+
+
+                // Get all messages involving current user
+
+                const {
+                    data: messages,
+                    error
+                } =
+                    await supabaseClient
+                        .from("chats")
+                        .select("*")
+                        .or(
+                            "buyer_id.eq." +
+                            currentUser.id +
+                            ",seller_id.eq." +
+                            currentUser.id
+                        )
+                        .order(
+                            "created_at",
+                            {
+                                ascending: false
+                            }
+                        );
+
+
+                if (error) {
+
+                    console.error(error);
+
+                    showError(
+                        error.message
+                    );
+
+                    return;
+
+                }
+
+
+                if (!messages || !messages.length) {
+
+                    showEmpty();
+
+                    return;
+
+                }
+
+
+                // Create unique conversations
+
+                const conversations =
+                    getConversations(
+                        messages
+                    );
+
+
+                await displayChats(
+                    conversations
+                );
+
+            }
+
+            catch (error) {
+
+                console.error(error);
+
+                showError(
+                    "Something went wrong."
+                );
+
+            }
+
+        }
+
+
+        // ==========================================
+        // CREATE UNIQUE CONVERSATIONS
+        // ==========================================
+
+        function getConversations(
+            messages
+        ) {
+
+            const map =
+                new Map();
+
+
+            messages.forEach(
+                message => {
+
+                    const otherUser =
+                        message.buyer_id ===
+                            currentUser.id
+                            ? message.seller_id
+                            : message.buyer_id;
+
+
+                    /*
+                     * One conversation is identified
+                     * by product + other user.
+                     */
+
+                    const key =
+                        message.listing_id +
+                        "_" +
+                        otherUser;
+
+
+                    if (!map.has(key)) {
+
+                        map.set(
+                            key,
+                            {
+                                listingId:
+                                    message.listing_id,
+
+                                otherUserId:
+                                    otherUser,
+
+                                lastMessage:
+                                    message.message,
+
+                                createdAt:
+                                    message.created_at
+                            }
+                        );
+
+                    }
+
+                }
+            );
+
+
+            return Array.from(
+                map.values()
+            );
+
+        }
+
+
+        // ==========================================
+        // DISPLAY CHATS
+        // ==========================================
+
+        async function displayChats(
+            conversations
+        ) {
+
+            const container =
+                document.getElementById(
+                    "chatList"
+                );
+
+
+            container.innerHTML = "";
+
+
+            for (
+                const conversation
+                of conversations
+            ) {
+
+                // Get listing
+
+                const {
+                    data: listing
+                } =
+                    await supabaseClient
+                        .from("listings")
+                        .select(
+                            "title"
+                        )
+                        .eq(
+                            "id",
+                            conversation.listingId
+                        )
+                        .maybeSingle();
+
+
+                // Get other user's profile
+
+                const {
+                    data: profile
+                } =
+                    await supabaseClient
+                        .from("profiles")
+                        .select(
+                            "full_name, student_id"
+                        )
+                        .eq(
+                            "id",
+                            conversation.otherUserId
+                        )
+                        .maybeSingle();
+
+
+                const name =
+                    profile?.full_name ||
+                    "HIT Student";
+
+
+                const productTitle =
+                    listing?.title ||
+                    "Product";
+
+
+                const date =
+                    new Date(
+                        conversation.createdAt
+                    ).toLocaleString(
+                        "en-IN",
+                        {
+                            day: "numeric",
+                            month: "short",
+                            hour: "numeric",
+                            minute: "2-digit"
+                        }
+                    );
+
+
+                const card =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                card.className =
+                    "chat-card";
+
+
+                card.innerHTML = `
+
+                    <div class="chat-top">
+
+                        <div class="person">
+                            👤 ${escapeHtml(name)}
+                        </div>
+
+                        <div class="time">
+                            ${date}
+                        </div>
+
+                    </div>
+
+
+                    <div class="product">
+                        📦 ${escapeHtml(productTitle)}
+                    </div>
+
+
+                    <div class="last-message">
+                        ${escapeHtml(
+                            conversation.lastMessage
+                        )}
+                    </div>
+
+                `;
+
+
+                card.onclick =
+                    function () {
+
+                        window.location.href =
+                            "chat.html?listing=" +
+                            encodeURIComponent(
+                                conversation.listingId
+                            ) +
+                            "&seller=" +
+                            encodeURIComponent(
+                                getSellerId(
+                                    conversation
+                                )
+                            );
+
+                    };
+
+
+                container.appendChild(
+                    card
+                );
+
+            }
+
+        }
+
+
+        // ==========================================
+        // GET SELLER ID
+        // ==========================================
+
+        function getSellerId(
+            conversation
+        ) {
+
+            /*
+             * For now chat.html expects
+             * the seller ID.
+             *
+             * If current user is buyer,
+             * otherUser is seller.
+             *
+             * If current user is seller,
+             * we need the listing seller ID.
+             *
+             * The current conversation object
+             * does not contain it, so we return
+             * the other user for buyer chats.
+             *
+             * Seller inbox will be handled by the
+             * corrected chat page.
+             */
+
+            return conversation.otherUserId;
+
+        }
+
+
+        // ==========================================
+        // EMPTY
+        // ==========================================
+
+        function showEmpty() {
+
+            document.getElementById(
+                "chatList"
+            ).innerHTML = `
+
+                <div class="empty">
+
+                    <h2>
+                        💬 No chats yet
+                    </h2>
+
+                    <p>
+                        Your conversations will appear here.
+                    </p>
+
+                </div>
+
+            `;
+
+        }
+
+
+        // ==========================================
+        // ERROR
+        // ==========================================
+
+        function showError(
+            message
+        ) {
+
+            document.getElementById(
+                "chatList"
+            ).innerHTML = `
+
+                <div class="error">
+
+                    <h2>
+                        Could not load chats
+                    </h2>
+
+                    <p>
+                        ${escapeHtml(message)}
+                    </p>
+
+                </div>
+
+            `;
+
+        }
+
+
+        // ==========================================
+        // BACK
+        // ==========================================
+
+        function goBack() {
+
+            window.location.href =
+                "marketplace.html";
+
+        }
+
+
+        // ==========================================
+        // ESCAPE HTML
+        // ==========================================
+
+        function escapeHtml(value) {
+
+            return String(
+                value ?? ""
+            )
+                .replace(
+                    /&/g,
+                    "&amp;"
+                )
+                .replace(
+                    /</g,
+                    "&lt;"
+                )
+                .replace(
+                    />/g,
+                    "&gt;"
+                )
+                .replace(
+                    /"/g,
+                    "&quot;"
+                )
+                .replace(
+                    /'/g,
+                    "&#039;"
+                );
+
+        }
+
+    </script>
+
+</body>
+</html>
