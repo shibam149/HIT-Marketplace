@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Listing | HIT Marketplace</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+            background: #f6f8fc;
+            color: #172033;
+        }
+
+        .topbar {
+            background: linear-gradient(90deg, #0b376f, #1456a0);
+            color: white;
+            text-align: center;
+            padding: 9px;
+            font-size: 13px;
+        }
+
+        nav {
+            min-height: 72px;
+            background: rgba(255, 255, 255, .97);
+            border-bottom: 1px solid #e7ebf2;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 6%;
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            box-shadow: 0 2px 14px rgba(15, 23, 42, .05);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: #172033;
+        }
+
+        .brand-logo {
+            width: 43px;
+            height: 43px;
+            background: linear-gradient(135deg, #0b376f, #1e6acb);
+            color: white;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            box-shadow: 0 5px 14px rgba(11, 55, 111, .20);
+        }
+
+        .brand-name {
+            font-size: 20px;
+            font-weight: 800;
+        }
+
+        .nav-right {
+            display: flex;
+            gap: 9px;
+            align-items: center;
+        }
+
+        .nav-btn,
+        .logout-btn {
+            border: 1px solid #dce5f0;
+            background: white;
+            color: #0b376f;
+            padding: 10px 14px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .logout-btn {
+            color: #334155;
+        }
+
+        .container {
+            width: 92%;
+            max-width: 850px;
+            margin: 38px auto 60px;
+        }
+
+        .page-heading {
+            margin-bottom: 22px;
+        }
+
+        .page-heading h1 {
+            color: #102f5e;
+            font-size: 32px;
+            margin-bottom: 7px;
+        }
+
+        .page-heading p {
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid #e4e9f1;
+            border-radius: 20px;
+            box-shadow: 0 9px 28px rgba(15, 23, 42, .07);
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 22px 24px;
+            border-bottom: 1px solid #edf1f6;
+            background: linear-gradient(180deg, #ffffff, #fbfcff);
+        }
+
+        .card-header h2 {
+            font-size: 19px;
+            color: #172033;
+            margin-bottom: 5px;
+        }
+
+        .card-header p {
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        form {
+            padding: 24px;
+        }
+
+        .image-section {
+            display: grid;
+            grid-template-columns: 190px 1fr;
+            gap: 20px;
+            margin-bottom: 24px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid #edf1f6;
+        }
+
+        .image-preview {
+            width: 190px;
+            height: 150px;
+            border-radius: 14px;
+            overflow: hidden;
+            background: linear-gradient(135deg, #edf2f8, #f8fafc);
+            border: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #94a3b8;
+            font-size: 13px;
+            text-align: center;
+        }
+
+        .image-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .image-info h3 {
+            font-size: 15px;
+            margin: 5px 0 8px;
+        }
+
+        .image-info p {
+            color: #64748b;
+            font-size: 13px;
+            line-height: 1.5;
+            margin-bottom: 13px;
+        }
+
+        .file-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #dbe3ee;
+            border-radius: 10px;
+            background: #fff;
+            font-size: 13px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .field.full {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            font-size: 13px;
+            font-weight: 750;
+            color: #334155;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            border: 1px solid #d8e1ec;
+            border-radius: 11px;
+            padding: 12px 13px;
+            background: #fff;
+            color: #172033;
+            font-size: 14px;
+            outline: none;
+            transition: .18s;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: #2b72c7;
+            box-shadow: 0 0 0 3px rgba(43, 114, 199, .10);
+        }
+
+        textarea {
+            min-height: 125px;
+            resize: vertical;
+            line-height: 1.5;
+        }
+
+        .help {
+            color: #94a3b8;
+            font-size: 11px;
+        }
+
+        .status-info {
+            padding: 12px 14px;
+            border-radius: 11px;
+            background: #f1f5fb;
+            color: #475569;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 26px;
+            padding-top: 20px;
+            border-top: 1px solid #edf1f6;
+        }
+
+        .btn {
+            border: 0;
+            border-radius: 10px;
+            padding: 12px 18px;
+            font-weight: 750;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .btn-cancel {
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+        .btn-save {
+            background: linear-gradient(135deg, #0b376f, #155eaa);
+            color: white;
+            min-width: 145px;
+        }
+
+        .btn-save:disabled {
+            opacity: .6;
+            cursor: not-allowed;
+        }
+
+        .message {
+            padding: 60px 20px;
+            text-align: center;
+            color: #64748b;
+        }
+
+        .message h2 {
+            color: #172033;
+            margin-bottom: 8px;
+        }
+
+        .error-box,
+        .success-box {
+            display: none;
+            margin-bottom: 18px;
+            padding: 12px 14px;
+            border-radius: 10px;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .error-box {
+            background: #fff1f2;
+            border: 1px solid #fecdd3;
+            color: #be123c;
+        }
+
+        .success-box {
+            background: #ecfdf5;
+            border: 1px solid #bbf7d0;
+            color: #166534;
+        }
+
+        @media (max-width: 700px) {
+            nav {
+                padding: 0 4%;
+            }
+
+            .brand-name {
+                font-size: 16px;
+            }
+
+            .nav-btn,
+            .logout-btn {
+                padding: 8px 9px;
+                font-size: 12px;
+            }
+
+            .container {
+                width: 94%;
+                margin-top: 25px;
+            }
+
+            .page-heading h1 {
+                font-size: 28px;
+            }
+
+            .image-section,
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .image-preview {
+                width: 100%;
+                height: 210px;
+            }
+
+            .field.full {
+                grid-column: auto;
+            }
+
+            .actions {
+                flex-direction: column-reverse;
+            }
+
+            .btn {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="topbar">
+        🎓 HIT Student Marketplace • Buy. Sell. Connect.
+    </div>
+
+    <nav>
+        <a href="index.html" class="brand">
+            <div class="brand-logo">HIT</div>
+            <div class="brand-name">HIT Marketplace</div>
+        </a>
+
+        <div class="nav-right">
+            <a href="my-listings.html" class="nav-btn">📦 My Listings</a>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </nav>
+
+    <main class="container">
+
+        <div class="page-heading">
+            <h1>✏️ Edit Listing</h1>
+            <p>Update your product information, price, status or image.</p>
+        </div>
+
+        <div class="card">
+
+            <div class="card-header">
+                <h2 id="productHeading">Loading listing...</h2>
+                <p>Only the owner of this listing can make changes.</p>
+            </div>
+
+            <div id="loadingMessage" class="message">
+                <h2>Loading...</h2>
+                <p>Please wait while we load your listing.</p>
+            </div>
+
+            <form id="editForm" style="display:none;">
+
+                <div id="errorBox" class="error-box"></div>
+                <div id="successBox" class="success-box"></div>
+
+                <div class="image-section">
+
+                    <div id="imagePreview" class="image-preview">
+                        No image
+                    </div>
+
+                    <div class="image-info">
+                        <h3>Product Image</h3>
+                        <p>
+                            Keep the current image or choose a new JPG, PNG or WEBP image.
+                            Maximum size: 5 MB.
+                        </p>
+
+                        <input
+                            id="image"
+                            class="file-input"
+                            type="file"
+                            accept="image/jpeg,image/png,image/webp"
+                        >
+
+                        <div class="help" style="margin-top:8px;">
+                            Selecting a new image will replace the current product image.
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="form-grid">
+
+                    <div class="field full">
+                        <label for="title">Product Name *</label>
+                        <input
+                            id="title"
+                            type="text"
+                            maxlength="100"
+                            placeholder="Enter product name"
+                            required
+                        >
+                    </div>
+
+                    <div class="field">
+                        <label for="category">Category *</label>
+                        <select id="category" required>
+                            <option value="">Select category</option>
+                            <option value="Books">Books</option>
+                            <option value="Electronics">Electronics</option>
+                            <option value="Furniture">Furniture</option>
+                            <option value="Clothing">Clothing</option>
+                            <option value="Stationery">Stationery</option>
+                            <option value="Sports">Sports</option>
+                            <option value="Accessories">Accessories</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label for="price">Price (₹) *</label>
+                        <input
+                            id="price"
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            placeholder="Enter price"
+                            required
+                        >
+                    </div>
+
+                    <div class="field">
+                        <label for="status">Listing Status *</label>
+                        <select id="status" required>
+                            <option value="ACTIVE">ACTIVE</option>
+                            <option value="RESERVED">RESERVED</option>
+                            <option value="SOLD">SOLD</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label>Seller</label>
+                        <div class="status-info">
+                            This listing belongs to your verified HIT Marketplace account.
+                        </div>
+                    </div>
+
+                    <div class="field full">
+                        <label for="description">Description</label>
+                        <textarea
+                            id="description"
+                            maxlength="1000"
+                            placeholder="Describe the condition, features, included items, etc."
+                        ></textarea>
+                        <div class="help">Maximum 1000 characters.</div>
+                    </div>
+
+                </div>
+
+                <div class="actions">
+                    <a href="my-listings.html" class="btn btn-cancel">Cancel</a>
+                    <button id="saveButton" type="submit" class="btn btn-save">
+                        Save Changes
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+
+    </main>
+
+    <script>
+        const SUPABASE_URL =
+            "https://ziyyqhnmhbwomibpsenf.supabase.co";
+
+        const SUPABASE_KEY =
+            "sb_publishable_i25Oy3Rbnzr3S45H4KzQyg_dLeEd3YH";
+
+        const supabaseClient =
+            supabase.createClient(
+                SUPABASE_URL,
+                SUPABASE_KEY
+            );
+
+        let currentUser = null;
+        let currentListing = null;
+
+        function escapeHtml(value) {
+            return String(value ?? "")
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        function getListingId() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get("id");
+        }
+
+        function showError(message) {
+            const box = document.getElementById("errorBox");
+            box.textContent = message;
+            box.style.display = "block";
+
+            document.getElementById("successBox").style.display = "none";
+        }
+
+        function showSuccess(message) {
+            const box = document.getElementById("successBox");
+            box.textContent = message;
+            box.style.display = "block";
+
+            document.getElementById("errorBox").style.display = "none";
+        }
+
+        async function checkUser() {
+
+            const {
+                data: { session },
+                error
+            } = await supabaseClient.auth.getSession();
+
+            if (error || !session) {
+                window.location.replace("login.html");
+                return null;
+            }
+
+            const {
+                data: profile,
+                error: profileError
+            } = await supabaseClient
+                .from("profiles")
+                .select("verification_status")
+                .eq("id", session.user.id)
+                .single();
+
+            if (
+                profileError ||
+                !profile ||
+                profile.verification_status !== "VERIFIED"
+            ) {
+                window.location.replace("verify.html");
+                return null;
+            }
+
+            currentUser = session.user;
+
+            return session.user;
+        }
+
+        async function loadListing() {
+
+            const user = await checkUser();
+
+            if (!user) return;
+
+            const listingId = getListingId();
+
+            if (!listingId) {
+                document.getElementById("loadingMessage").innerHTML = `
+                    <h2>Listing not found</h2>
+                    <p>No listing ID was provided.</p>
+                    <br>
+                    <a href="my-listings.html">Back to My Listings</a>
+                `;
+                return;
+            }
+
+            const {
+                data: listing,
+                error
+            } = await supabaseClient
+                .from("listings")
+                .select("*")
+                .eq("id", listingId)
+                .eq("seller_id", user.id)
+                .single();
+
+            if (error || !listing) {
+                console.error(error);
+
+                document.getElementById("loadingMessage").innerHTML = `
+                    <h2>Listing not found</h2>
+                    <p>
+                        This listing does not exist or you do not have permission
+                        to edit it.
+                    </p>
+                    <br>
+                    <a href="my-listings.html">Back to My Listings</a>
+                `;
+
+                return;
+            }
+
+            currentListing = listing;
+
+            document.getElementById("productHeading").textContent =
+                "Editing: " + listing.title;
+
+            document.getElementById("title").value =
+                listing.title || "";
+
+            document.getElementById("category").value =
+                listing.category || "";
+
+            document.getElementById("price").value =
+                listing.price ?? "";
+
+            document.getElementById("status").value =
+                listing.status || "ACTIVE";
+
+            document.getElementById("description").value =
+                listing.description || "";
+
+            if (listing.image_url) {
+                document.getElementById("imagePreview").innerHTML = `
+                    <img
+                        src="${escapeHtml(listing.image_url)}"
+                        alt="${escapeHtml(listing.title)}"
+                    >
+                `;
+            }
+
+            document.getElementById("loadingMessage").style.display = "none";
+            document.getElementById("editForm").style.display = "block";
+        }
+
+        document.getElementById("image").addEventListener("change", function () {
+
+            const file = this.files[0];
+
+            if (!file) return;
+
+            if (file.size > 5 * 1024 * 1024) {
+                alert("Image must be 5 MB or smaller.");
+                this.value = "";
+                return;
+            }
+
+            const allowed = [
+                "image/jpeg",
+                "image/png",
+                "image/webp"
+            ];
+
+            if (!allowed.includes(file.type)) {
+                alert("Only JPG, PNG and WEBP images are allowed.");
+                this.value = "";
+                return;
+            }
+
+            const reader = new FileReader();
+
+            reader.onload = function (event) {
+                document.getElementById("imagePreview").innerHTML = `
+                    <img
+                        src="${event.target.result}"
+                        alt="New product image"
+                    >
+                `;
+            };
+
+            reader.readAsDataURL(file);
+        });
+
+        document.getElementById("editForm").addEventListener("submit", async function (event) {
+
+            event.preventDefault();
+
+            if (!currentUser || !currentListing) {
+                return;
+            }
+
+            const saveButton =
+                document.getElementById("saveButton");
+
+            saveButton.disabled = true;
+            saveButton.textContent = "Saving...";
+
+            document.getElementById("errorBox").style.display = "none";
+            document.getElementById("successBox").style.display = "none";
+
+            const title =
+                document.getElementById("title").value.trim();
+
+            const category =
+                document.getElementById("category").value;
+
+            const price =
+                Number(document.getElementById("price").value);
+
+            const status =
+                document.getElementById("status").value;
+
+            const description =
+                document.getElementById("description").value.trim();
+
+            if (!title) {
+                showError("Please enter a product name.");
+                saveButton.disabled = false;
+                saveButton.textContent = "Save Changes";
+                return;
+            }
+
+            if (!category) {
+                showError("Please select a category.");
+                saveButton.disabled = false;
+                saveButton.textContent = "Save Changes";
+                return;
+            }
+
+            if (!Number.isFinite(price) || price < 0) {
+                showError("Please enter a valid price.");
+                saveButton.disabled = false;
+                saveButton.textContent = "Save Changes";
+                return;
+            }
+
+            if (!["ACTIVE", "RESERVED", "SOLD"].includes(status)) {
+                showError("Invalid listing status.");
+                saveButton.disabled = false;
+                saveButton.textContent = "Save Changes";
+                return;
+            }
+
+            let imageUrl = currentListing.image_url || null;
+
+            const imageFile =
+                document.getElementById("image").files[0];
+
+            if (imageFile) {
+
+                if (imageFile.size > 5 * 1024 * 1024) {
+                    showError("Image must be 5 MB or smaller.");
+                    saveButton.disabled = false;
+                    saveButton.textContent = "Save Changes";
+                    return;
+                }
+
+                const extension =
+                    imageFile.name.split(".").pop().toLowerCase();
+
+                const safeExtension =
+                    ["jpg", "jpeg", "png", "webp"].includes(extension)
+                        ? extension
+                        : null;
+
+                if (!safeExtension) {
+                    showError("Only JPG, PNG and WEBP images are allowed.");
+                    saveButton.disabled = false;
+                    saveButton.textContent = "Save Changes";
+                    return;
+                }
+
+                const filePath =
+                    `${currentUser.id}/${Date.now()}_edited.${safeExtension}`;
+
+                const {
+                    error: uploadError
+                } = await supabaseClient
+                    .storage
+                    .from("product-images")
+                    .upload(
+                        filePath,
+                        imageFile,
+                        {
+                            cacheControl: "3600",
+                            upsert: false,
+                            contentType: imageFile.type
+                        }
+                    );
+
+                if (uploadError) {
+                    console.error(uploadError);
+                    showError(
+                        "Image upload failed: " +
+                        uploadError.message
+                    );
+
+                    saveButton.disabled = false;
+                    saveButton.textContent = "Save Changes";
+                    return;
+                }
+
+                const {
+                    data: publicData
+                } = supabaseClient
+                    .storage
+                    .from("product-images")
+                    .getPublicUrl(filePath);
+
+                imageUrl =
+                    publicData.publicUrl;
+            }
+
+            const {
+                error: updateError
+            } = await supabaseClient
+                .from("listings")
+                .update({
+                    title: title,
+                    category: category,
+                    price: price,
+                    description: description,
+                    status: status,
+                    image_url: imageUrl
+                })
+                .eq("id", currentListing.id)
+                .eq("seller_id", currentUser.id);
+
+            if (updateError) {
+
+                console.error(updateError);
+
+                showError(
+                    "Could not update listing: " +
+                    updateError.message
+                );
+
+                saveButton.disabled = false;
+                saveButton.textContent = "Save Changes";
+                return;
+            }
+
+            showSuccess("Listing updated successfully.");
+
+            setTimeout(function () {
+                window.location.href =
+                    "my-listings.html";
+            }, 900);
+        });
+
+        async function logout() {
+
+            const { error } =
+                await supabaseClient.auth.signOut();
+
+            if (error) {
+                alert("Logout failed: " + error.message);
+                return;
+            }
+
+            window.location.replace("login.html");
+        }
+
+        loadListing();
+    </script>
+
+</body>
+</html>
