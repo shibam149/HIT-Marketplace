@@ -42,6 +42,22 @@
             font-weight: bold;
         }
 
+        .unread-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 22px;
+            height: 22px;
+            padding: 0 6px;
+            margin-left: 6px;
+            border-radius: 999px;
+            background: #dc2626;
+            color: white;
+            font-size: 11px;
+            font-weight: 700;
+            vertical-align: middle;
+        }
+
         .back-btn {
             border: none;
             background: #eef2ff;
@@ -225,7 +241,7 @@
         <div class="heading">
 
             <h1>
-                💬 My Chats
+                💬 My Chats <span id="unreadBadge" class="unread-badge" style="display:none;">0</span>
             </h1>
 
             <p>
@@ -274,6 +290,7 @@
         // ==========================================
 
         let currentUser = null;
+        let unreadCount = 0;
 
 
         // ==========================================
@@ -285,9 +302,101 @@
             async function () {
 
                 await loadChats();
+                startRealtime();
 
             }
         );
+
+
+        // ==========================================
+        // REALTIME NEW MESSAGES
+        // ==========================================
+
+        function startRealtime() {
+
+            if (!currentUser) return;
+
+            supabaseClient
+                .channel("my-chats-" + currentUser.id)
+                .on(
+                    "postgres_changes",
+                    {
+                        event: "INSERT",
+                        schema: "public",
+                        table: "chats"
+                    },
+                    async function (payload) {
+
+                        const message = payload.new;
+
+                        if (
+                            message &&
+                            (
+                                message.buyer_id === currentUser.id ||
+                                message.seller_id === currentUser.id
+                            )
+                        ) {
+                            await loadChats();
+                        }
+                    }
+                )
+                .on(
+                    "postgres_changes",
+                    {
+                        event: "UPDATE",
+                        schema: "public",
+                        table: "chats"
+                    },
+                    async function (payload) {
+
+                        const message = payload.new;
+
+                        if (
+                            message &&
+                            (
+                                message.buyer_id === currentUser.id ||
+                                message.seller_id === currentUser.id
+                            )
+                        ) {
+                            await loadChats();
+                        }
+                    }
+                )
+                .subscribe(function (status) {
+                    console.log(
+                        "Chats realtime status:",
+                        status
+                    );
+                });
+        }
+
+
+        // ==========================================
+        // UNREAD BADGE
+        // ==========================================
+
+        function updateUnreadBadge() {
+
+            const badge =
+                document.getElementById("unreadBadge");
+
+            if (!badge) return;
+
+            if (unreadCount > 0) {
+
+                badge.textContent =
+                    unreadCount > 99
+                        ? "99+"
+                        : unreadCount;
+
+                badge.style.display = "inline-flex";
+
+            } else {
+
+                badge.style.display = "none";
+
+            }
+        }
 
 
         // ==========================================
@@ -359,6 +468,16 @@
 
                 }
 
+                unreadCount =
+                    (messages || []).filter(
+                        message =>
+                            message.sender_id &&
+                            message.sender_id !== currentUser.id &&
+                            message.is_read === false
+                    ).length;
+
+                updateUnreadBadge();
+
 
                 if (!messages || !messages.length) {
 
@@ -404,60 +523,53 @@
             messages
         ) {
 
-            const map =
-                new Map();
+            const map = new Map();
 
+            messages.forEach(message => {
 
-            messages.forEach(
-                message => {
+                const otherUser =
+                    message.buyer_id === currentUser.id
+                        ? message.seller_id
+                        : message.buyer_id;
 
-                    const otherUser =
-                        message.buyer_id ===
-                            currentUser.id
-                            ? message.seller_id
-                            : message.buyer_id;
+                const key =
+                    message.listing_id + "_" + otherUser;
 
-
-                    /*
-                     * One conversation is identified
-                     * by product + other user.
-                     */
-
-                    const key =
-                        message.listing_id +
-                        "_" +
-                        otherUser;
-
-
-                    if (!map.has(key)) {
-
-                        map.set(
-                            key,
-                            {
-                                listingId:
-                                    message.listing_id,
-
-                                otherUserId:
-                                    otherUser,
-
-                                lastMessage:
-                                    message.message,
-
-                                createdAt:
-                                    message.created_at
-                            }
-                        );
-
-                    }
-
+                if (!map.has(key)) {
+                    map.set(key, {
+                        listingId: message.listing_id,
+                        otherUserId: otherUser,
+                        lastMessage: message.message,
+                        createdAt: message.created_at,
+                        unreadCount: 0
+                    });
                 }
-            );
 
+                const conversation = map.get(key);
 
-            return Array.from(
-                map.values()
-            );
+                if (
+                    new Date(message.created_at).getTime() >
+                    new Date(conversation.createdAt).getTime()
+                ) {
+                    conversation.lastMessage = message.message;
+                    conversation.createdAt = message.created_at;
+                }
 
+                if (
+                    message.sender_id &&
+                    message.sender_id !== currentUser.id &&
+                    message.is_read === false
+                ) {
+                    conversation.unreadCount++;
+                }
+            });
+
+            return Array.from(map.values())
+                .sort(
+                    (a, b) =>
+                        new Date(b.createdAt) -
+                        new Date(a.createdAt)
+                );
         }
 
 
@@ -577,11 +689,38 @@
                         )}
                     </div>
 
+                    ${
+                        conversation.unreadCount > 0
+                            ? `
+                                <span class="unread-badge">
+                                    ${
+                                        conversation.unreadCount > 99
+                                            ? "99+"
+                                            : conversation.unreadCount
+                                    } NEW
+                                </span>
+                            `
+                            : ""
+                    }
+
                 `;
 
 
                 card.onclick =
                     function () {
+
+                        localStorage.setItem(
+                            "hit_chat_last_read_" +
+                            currentUser.id,
+                            String(
+                                new Date(
+                                    conversation.createdAt
+                                ).getTime()
+                            )
+                        );
+
+                        unreadCount = 0;
+                        updateUnreadBadge();
 
                         window.location.href =
                             "chat.html?listing=" +
@@ -604,6 +743,43 @@
 
             }
 
+        }
+
+
+        // ==========================================
+        // MARK ONE CONVERSATION AS READ
+        // ==========================================
+
+        async function markConversationRead(
+            conversationListingId,
+            otherUserId
+        ) {
+
+            if (!currentUser) return;
+
+            const { error } = await supabaseClient
+                .from("chats")
+                .update({ is_read: true })
+                .eq("listing_id", conversationListingId)
+                .or(
+                    "buyer_id.eq." +
+                    currentUser.id +
+                    ",seller_id.eq." +
+                    currentUser.id
+                )
+                .eq("is_read", false)
+                .neq("sender_id", currentUser.id);
+
+            if (error) {
+                console.error(
+                    "Could not mark conversation read:",
+                    error
+                );
+                return;
+            }
+
+            unreadCount = 0;
+            updateUnreadBadge();
         }
 
 

@@ -105,28 +105,40 @@
             margin-bottom: 14px;
         }
 
+        .message-row {
+            display: flex;
+            margin-bottom: 8px;
+            width: 100%;
+        }
+
         .message-row.mine {
             justify-content: flex-end;
         }
 
+        .message-row:not(.mine) {
+            justify-content: flex-start;
+        }
+
         .message {
-            max-width: 70%;
-
-            padding: 11px 14px;
-
-            border-radius: 13px;
-
+            max-width: 72%;
+            padding: 9px 12px 7px;
+            border-radius: 10px;
             background: white;
-
             border: 1px solid #e5eaf1;
-
             word-wrap: break-word;
+            box-shadow: 0 1px 1px rgba(0,0,0,0.04);
         }
 
         .message-row.mine .message {
-            background: #2563eb;
-            color: white;
+            background: #dcf8c6;
+            color: #172033;
             border: none;
+            border-radius: 10px 10px 3px 10px;
+        }
+
+        .message-row:not(.mine) .message {
+            background: white;
+            border-radius: 10px 10px 10px 3px;
         }
 
         .message-time {
@@ -618,10 +630,37 @@
 
 
         // ==========================================
+        // MARK RECEIVED MESSAGES AS READ
+        // ==========================================
+
+        async function markMessagesRead() {
+
+            if (!currentUser || !listingId || !buyerId || !sellerId) {
+                return;
+            }
+
+            const { error } = await supabaseClient
+                .from("chats")
+                .update({ is_read: true })
+                .eq("listing_id", listingId)
+                .eq("buyer_id", buyerId)
+                .eq("seller_id", sellerId)
+                .neq("sender_id", currentUser.id)
+                .eq("is_read", false);
+
+            if (error) {
+                console.error("Mark read error:", error);
+            }
+        }
+
+
+        // ==========================================
         // LOAD MESSAGES
         // ==========================================
 
         async function loadMessages() {
+
+            await markMessagesRead();
 
             const {
                 data,
@@ -706,17 +745,16 @@
                 messages.map(
                     message => {
 
-                        // Message belongs to current user
-
+                        // sender_id tells us who actually sent the message.
+                        // Fallback supports older messages created before sender_id existed.
                         const mine =
-                            (
-                                message.buyer_id ===
-                                currentUser.id
-                            ) ||
-                            (
-                                message.seller_id ===
-                                currentUser.id
-                            );
+                            message.sender_id
+                                ? message.sender_id === currentUser.id
+                                : (
+                                    currentUser.id === buyerId
+                                        ? message.buyer_id === currentUser.id
+                                        : message.seller_id === currentUser.id
+                                );
 
 
                         const time =
@@ -830,8 +868,14 @@
                             seller_id:
                                 sellerId,
 
+                            sender_id:
+                                currentUser.id,
+
                             message:
-                                message
+                                message,
+
+                            is_read:
+                                false
 
                         });
 
@@ -892,14 +936,77 @@
                                 "listing_id=eq." +
                                 listingId
                         },
-                        function () {
+                        function (payload) {
 
-                            loadMessages();
+                            const incoming = payload.new;
+
+                            if (!incoming) return;
+
+                            const isThisConversation =
+                                incoming.listing_id === listingId &&
+                                incoming.buyer_id === buyerId &&
+                                incoming.seller_id === sellerId;
+
+                            if (!isThisConversation) return;
+
+                            // Avoid showing our own message twice because sendMessage()
+                            // already reloads the conversation after inserting.
+                            if (incoming.sender_id === currentUser.id) {
+                                loadMessages();
+                                return;
+                            }
+
+                            appendRealtimeMessage(incoming);
+                            markMessagesRead();
 
                         }
                     )
                     .subscribe();
 
+        }
+
+
+        // ==========================================
+        // APPEND REALTIME MESSAGE
+        // ==========================================
+
+        function appendRealtimeMessage(message) {
+
+            const container =
+                document.getElementById("messages");
+
+            const empty = container.querySelector(".empty");
+
+            if (empty) {
+                container.innerHTML = "";
+            }
+
+            const row = document.createElement("div");
+            row.className =
+                "message-row " +
+                (message.sender_id === currentUser.id ? "mine" : "");
+
+            const bubble = document.createElement("div");
+            bubble.className = "message";
+
+            const time = new Date(
+                message.created_at
+            ).toLocaleTimeString("en-IN", {
+                hour: "numeric",
+                minute: "2-digit"
+            });
+
+            bubble.innerHTML =
+                escapeHtml(message.message) +
+                '<span class="message-time">' +
+                escapeHtml(time) +
+                "</span>";
+
+            row.appendChild(bubble);
+            container.appendChild(row);
+
+            container.scrollTop =
+                container.scrollHeight;
         }
 
 
