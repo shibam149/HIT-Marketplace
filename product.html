@@ -184,6 +184,37 @@
             background: #1d4ed8;
         }
 
+        .save-btn {
+            width: 100%;
+            padding: 14px 15px;
+            border: 1px solid #dbe3ee;
+            border-radius: 10px;
+            background: #ffffff;
+            color: #334155;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 25px;
+            transition: .2s;
+        }
+
+        .save-btn:hover {
+            background: #fff7ed;
+            border-color: #fdba74;
+            color: #c2410c;
+        }
+
+        .save-btn.saved {
+            background: #fff1f2;
+            border-color: #fecdd3;
+            color: #be123c;
+        }
+
+        .save-btn:disabled {
+            opacity: .6;
+            cursor: not-allowed;
+        }
+
         .own-listing {
             background: #64748b;
             cursor: default;
@@ -326,9 +357,17 @@
                     id="chatButtonTop"
                     class="chat-btn"
                     onclick="chatWithSeller()"
-                    style="margin-bottom: 25px;"
+                    style="margin-bottom: 12px;"
                 >
                     💬 Chat with Seller
+                </button>
+
+                <button
+                    id="saveButton"
+                    class="save-btn"
+                    onclick="toggleSave()"
+                >
+                    ♡ Save Item
                 </button>
 
 
@@ -397,6 +436,7 @@
         let currentUser = null;
         let currentListing = null;
         let currentSeller = null;
+        let isSaved = false;
 
 
         // ==========================================
@@ -521,6 +561,9 @@
 
 
                 currentListing = listing;
+
+                // Check whether this product is already saved
+                await loadSavedState();
 
 
                 // Load seller profile
@@ -695,6 +738,129 @@
                 "hidden"
             );
 
+        }
+
+
+        // ==========================================
+        // SAVED ITEM
+        // ==========================================
+
+        async function loadSavedState() {
+
+            const saveButton =
+                document.getElementById("saveButton");
+
+            if (!currentUser || !currentListing) {
+                return;
+            }
+
+            if (currentListing.seller_id === currentUser.id) {
+                saveButton.textContent = "📦 Your Listing";
+                saveButton.disabled = true;
+                return;
+            }
+
+            const {
+                data,
+                error
+            } = await supabaseClient
+                .from("saved_items")
+                .select("id")
+                .eq("user_id", currentUser.id)
+                .eq("listing_id", currentListing.id)
+                .limit(1);
+
+            if (error) {
+                console.error("Could not check saved state:", error);
+                return;
+            }
+
+            isSaved = Array.isArray(data) && data.length > 0;
+            updateSaveButton();
+        }
+
+
+        function updateSaveButton() {
+
+            const saveButton =
+                document.getElementById("saveButton");
+
+            if (!saveButton) return;
+
+            if (isSaved) {
+                saveButton.textContent = "♥ Saved — Remove";
+                saveButton.classList.add("saved");
+            } else {
+                saveButton.textContent = "♡ Save Item";
+                saveButton.classList.remove("saved");
+            }
+        }
+
+
+        async function toggleSave() {
+
+            if (!currentUser || !currentListing) {
+                return;
+            }
+
+            if (currentListing.seller_id === currentUser.id) {
+                return;
+            }
+
+            const saveButton =
+                document.getElementById("saveButton");
+
+            saveButton.disabled = true;
+
+            try {
+
+                if (isSaved) {
+
+                    const { error } =
+                        await supabaseClient
+                            .from("saved_items")
+                            .delete()
+                            .eq("user_id", currentUser.id)
+                            .eq("listing_id", currentListing.id);
+
+                    if (error) throw error;
+
+                    isSaved = false;
+
+                } else {
+
+                    const { error } =
+                        await supabaseClient
+                            .from("saved_items")
+                            .insert({
+                                user_id: currentUser.id,
+                                listing_id: currentListing.id
+                            });
+
+                    if (error) throw error;
+
+                    isSaved = true;
+                }
+
+                updateSaveButton();
+
+            } catch (error) {
+
+                console.error("Saved item error:", error);
+
+                if (error.code === "23505") {
+                    isSaved = true;
+                    updateSaveButton();
+                } else {
+                    alert(
+                        "Could not update Saved Items: " +
+                        error.message
+                    );
+                }
+
+            } finally {
+                saveButton.disabled = false;
+            }
         }
 
 
