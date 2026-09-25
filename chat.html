@@ -90,6 +90,49 @@
             color: #64748b;
         }
 
+        .price-box {
+            margin-top: 10px;
+            padding: 10px 12px;
+            background: #f8fafc;
+            border: 1px solid #e5eaf1;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #334155;
+        }
+
+        .price-box strong {
+            color: #111827;
+        }
+
+        .price-warning {
+            margin-top: 5px;
+            color: #b45309;
+            font-size: 12px;
+        }
+
+        .product-details {
+            margin-top: 10px;
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 6px 18px;
+            font-size: 13px;
+            color: #475569;
+        }
+
+        .product-details div {
+            line-height: 1.4;
+        }
+
+        .product-details strong {
+            color: #1e293b;
+        }
+
+        @media (max-width: 600px) {
+            .product-details {
+                grid-template-columns: 1fr;
+            }
+        }
+
         .messages {
             flex: 1;
 
@@ -287,8 +330,20 @@
                 id="chatSubtitle"
                 class="chat-subtitle"
             >
-                Loading...
+                Loading product details...
             </div>
+
+            <div
+                id="productDetails"
+                class="price-box"
+                style="display:none;"
+            ></div>
+
+            <div
+                id="priceBox"
+                class="price-box"
+                style="display:none;"
+            ></div>
 
         </div>
 
@@ -361,6 +416,14 @@
         let sellerId = null;
 
         let realtimeChannel = null;
+        let isSending = false;
+
+        let listingTitle = "";
+        let listingPrice = null;
+        let listingStatus = "";
+        let listingDescription = "";
+        let chatPriceSnapshot = null;
+        let chatThreadId = null;
 
 
         // ==========================================
@@ -449,7 +512,7 @@
                     await supabaseClient
                         .from("listings")
                         .select(
-                            "id, title, seller_id"
+                            "id, title, seller_id, price, status, description"
                         )
                         .eq(
                             "id",
@@ -480,6 +543,20 @@
 
                 sellerId =
                     listing.seller_id;
+
+                // Store the complete product details
+                // so the chat header can display them.
+                listingTitle =
+                    listing.title || "Item";
+
+                listingPrice =
+                    listing.price;
+
+                listingStatus =
+                    listing.status || "ACTIVE";
+
+                listingDescription =
+                    listing.description || "";
 
 
                 // ==================================
@@ -567,11 +644,18 @@
                 document.getElementById(
                     "chatSubtitle"
                 ).textContent =
-                    "Product: " +
-                    (
-                        listing.title ||
-                        "Item"
-                    );
+                    "Product details";
+
+                showProductDetails();
+
+                const priceSnapshotReady =
+                    await ensureChatPriceSnapshot();
+
+                if (!priceSnapshotReady) {
+                    return;
+                }
+
+                updatePriceBox();
 
 
                 // ==================================
@@ -626,6 +710,184 @@
 
             }
 
+        }
+
+
+        // ==========================================
+        // PRICE SNAPSHOT
+        // ==========================================
+
+        function showProductDetails() {
+
+            const box =
+                document.getElementById(
+                    "productDetails"
+                );
+
+            if (!box) return;
+
+            const safeStatus =
+                String(listingStatus)
+                    .replace(
+                        /_/g,
+                        " "
+                    );
+
+            const description =
+                listingDescription
+                    ? escapeHtml(listingDescription)
+                    : "No description";
+
+            box.style.display = "block";
+
+            box.innerHTML =
+                '<div class="product-details">' +
+                    "<div><strong>Product:</strong> " +
+                    escapeHtml(listingTitle) +
+                    "</div>" +
+
+                    "<div><strong>Current price:</strong> ₹" +
+                    escapeHtml(
+                        listingPrice !== null &&
+                        listingPrice !== undefined &&
+                        listingPrice !== ""
+                            ? Number(listingPrice)
+                                .toLocaleString("en-IN")
+                            : "Not available"
+                    ) +
+                    "</div>" +
+
+                    "<div><strong>Status:</strong> " +
+                    escapeHtml(safeStatus) +
+                    "</div>" +
+
+                    "<div><strong>Description:</strong> " +
+                    description +
+                    "</div>" +
+                "</div>";
+        }
+
+
+        async function ensureChatPriceSnapshot() {
+
+            /*
+             * Permanent price snapshot.
+             *
+             * The Supabase function creates the chat thread only
+             * the first time this buyer/seller/product conversation
+             * is opened. It stores the listing price at that moment.
+             *
+             * If the seller later changes the listing price,
+             * initial_price remains unchanged.
+             */
+
+            const {
+                data,
+                error
+            } = await supabaseClient
+                .rpc(
+                    "get_or_create_chat_thread",
+                    {
+                        p_listing_id: listingId,
+                        p_buyer_id: buyerId,
+                        p_seller_id: sellerId
+                    }
+                );
+
+            if (error) {
+
+                console.error(
+                    "Permanent price snapshot error:",
+                    error
+                );
+
+                showError(
+                    "Could not create the chat price record: " +
+                    error.message
+                );
+
+                return false;
+            }
+
+            if (!data) {
+
+                showError(
+                    "Could not create the chat price record."
+                );
+
+                return false;
+            }
+
+            const thread =
+                Array.isArray(data)
+                    ? data[0]
+                    : data;
+
+            if (!thread) {
+
+                showError(
+                    "Could not load the chat price record."
+                );
+
+                return false;
+            }
+
+            chatThreadId =
+                thread.id;
+
+            chatPriceSnapshot =
+                Number(
+                    thread.initial_price
+                );
+
+            return true;
+        }
+
+
+        function updatePriceBox() {
+
+            const box =
+                document.getElementById(
+                    "priceBox"
+                );
+
+            if (!box) return;
+
+            if (
+                chatPriceSnapshot === null ||
+                Number.isNaN(chatPriceSnapshot)
+            ) {
+
+                box.style.display = "none";
+                return;
+            }
+
+            box.style.display = "block";
+
+            box.innerHTML =
+                "<strong>Price when chat started:</strong> ₹" +
+                escapeHtml(
+                    Number(
+                        chatPriceSnapshot
+                    ).toLocaleString("en-IN")
+                );
+
+            if (
+                listingPrice !== null &&
+                listingPrice !== undefined &&
+                Number(listingPrice) !== Number(chatPriceSnapshot)
+            ) {
+
+                box.innerHTML +=
+                    '<div class="price-warning">' +
+                    "Current listing price: ₹" +
+                    escapeHtml(
+                        Number(
+                            listingPrice
+                        ).toLocaleString("en-IN")
+                    ) +
+                    "</div>";
+            }
         }
 
 
@@ -809,6 +1071,10 @@
 
         async function sendMessage() {
 
+            if (isSending) {
+                return;
+            }
+
             const input =
                 document.getElementById(
                     "messageInput"
@@ -847,6 +1113,7 @@
             }
 
 
+            isSending = true;
             button.disabled = true;
 
 
@@ -893,7 +1160,6 @@
 
                 }
 
-
                 input.value = "";
 
 
@@ -904,6 +1170,7 @@
             finally {
 
                 button.disabled = false;
+                isSending = false;
 
                 input.focus();
 

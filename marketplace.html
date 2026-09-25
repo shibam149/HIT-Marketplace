@@ -207,6 +207,7 @@
 
         .product-card {
             background: white;
+            position: relative;
 
             border: 1px solid #e5eaf1;
             border-radius: 14px;
@@ -246,6 +247,25 @@
 
         .product-content {
             padding: 18px;
+        }
+
+        .save-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 1px solid #e5eaf1;
+            background: white;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.10);
+            font-size: 21px;
+            cursor: pointer;
+            z-index: 5;
+        }
+
+        .save-btn.saved {
+            color: #dc2626;
         }
 
         .product-category {
@@ -393,6 +413,10 @@
 
         <div class="nav-right">
 
+            <a href="my-listings.html" class="chat-btn">
+                📦 My Listings
+            </a>
+
             <a href="chats.html" class="chat-btn">
                 💬 Chats
                 <span
@@ -400,6 +424,10 @@
                     class="chat-badge"
                     style="display:none;"
                 >0</span>
+            </a>
+
+            <a href="saved.html" class="chat-btn">
+                ❤️ Saved
             </a>
 
             <a href="sell.html" class="sell-btn">
@@ -549,6 +577,7 @@
         let allProducts = [];
         let currentUserId = null;
         let marketplaceChatChannel = null;
+        let savedListingIds = new Set();
 
 
         /* =========================
@@ -762,6 +791,90 @@
 
 
         /* =========================
+           LOAD SAVED ITEMS
+        ========================= */
+
+        async function loadSavedIds(userId) {
+
+            const { data, error } =
+                await supabaseClient
+                    .from("saved_items")
+                    .select("listing_id")
+                    .eq("user_id", userId);
+
+            if (error) {
+                console.error("Saved items error:", error);
+                savedListingIds = new Set();
+                return;
+            }
+
+            savedListingIds = new Set(
+                (data || []).map(row => row.listing_id)
+            );
+        }
+
+
+        async function toggleSaved(event, listingId) {
+
+            event.stopPropagation();
+
+            if (!currentUserId) return;
+
+            const button =
+                event.currentTarget;
+
+            const isSaved =
+                savedListingIds.has(listingId);
+
+            button.disabled = true;
+
+            if (isSaved) {
+
+                const { error } =
+                    await supabaseClient
+                        .from("saved_items")
+                        .delete()
+                        .eq("user_id", currentUserId)
+                        .eq("listing_id", listingId);
+
+                if (error) {
+                    console.error(error);
+                    alert("Could not remove saved item.");
+                    button.disabled = false;
+                    return;
+                }
+
+                savedListingIds.delete(listingId);
+                button.textContent = "♡";
+                button.classList.remove("saved");
+
+            } else {
+
+                const { error } =
+                    await supabaseClient
+                        .from("saved_items")
+                        .insert({
+                            user_id: currentUserId,
+                            listing_id: listingId
+                        });
+
+                if (error) {
+                    console.error(error);
+                    alert("Could not save this item.");
+                    button.disabled = false;
+                    return;
+                }
+
+                savedListingIds.add(listingId);
+                button.textContent = "♥";
+                button.classList.add("saved");
+            }
+
+            button.disabled = false;
+        }
+
+
+        /* =========================
            LOAD PRODUCTS
         ========================= */
 
@@ -775,6 +888,10 @@
             }
 
             currentUserId = session.user.id;
+
+            await loadSavedIds(
+                currentUserId
+            );
 
             await loadUnreadCount(
                 currentUserId
@@ -934,6 +1051,14 @@
     onclick="openProduct('${product.id}')"
     style="cursor:pointer;"
 >
+
+                                <button
+                                    class="save-btn ${savedListingIds.has(product.id) ? "saved" : ""}"
+                                    type="button"
+                                    onclick="toggleSaved(event, '${product.id}')"
+                                    aria-label="Save item"
+                                    title="${savedListingIds.has(product.id) ? "Remove from saved" : "Save item"}"
+                                >${savedListingIds.has(product.id) ? "♥" : "♡"}</button>
 
                                 ${image}
 

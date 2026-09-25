@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saved Items | HIT Marketplace</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: Arial, Helvetica, sans-serif; background:#f5f7fb; color:#172033; }
+        .topbar { background:#0b376f; color:white; text-align:center; padding:9px; font-size:13px; }
+        nav { height:70px; background:white; border-bottom:1px solid #e5eaf1; display:flex; align-items:center; justify-content:space-between; padding:0 6%; }
+        .brand { display:flex; align-items:center; gap:12px; text-decoration:none; color:#172033; }
+        .brand-logo { width:42px; height:42px; background:#0b376f; color:white; border-radius:9px; display:flex; align-items:center; justify-content:center; font-weight:bold; }
+        .brand-name { font-size:20px; font-weight:700; }
+        .nav-right { display:flex; align-items:center; gap:10px; }
+        .nav-btn { background:#edf4ff; color:#0b376f; padding:11px 15px; border-radius:8px; text-decoration:none; font-weight:700; font-size:14px; }
+        .container { width:88%; max-width:1200px; margin:40px auto; }
+        h1 { color:#0b376f; font-size:32px; margin-bottom:8px; }
+        .subtitle { color:#64748b; margin-bottom:28px; }
+        #savedGrid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:22px; }
+        .card { background:white; border:1px solid #e5eaf1; border-radius:14px; overflow:hidden; cursor:pointer; transition:.2s; }
+        .card:hover { transform:translateY(-3px); box-shadow:0 8px 25px rgba(0,0,0,.08); }
+        .card img, .no-image { width:100%; height:210px; object-fit:cover; background:#eef2f7; }
+        .no-image { display:flex; align-items:center; justify-content:center; color:#64748b; }
+        .content { padding:18px; }
+        .category { display:inline-block; background:#edf4ff; color:#0b376f; padding:5px 9px; border-radius:20px; font-size:11px; font-weight:700; margin-bottom:10px; }
+        .title { font-size:19px; font-weight:700; margin-bottom:8px; }
+        .description { color:#64748b; font-size:13px; line-height:1.5; min-height:40px; margin-bottom:12px; }
+        .price { color:#0b376f; font-size:22px; font-weight:800; margin-bottom:12px; }
+        .remove { width:100%; border:1px solid #fecaca; background:#fff5f5; color:#b91c1c; padding:10px; border-radius:8px; cursor:pointer; font-weight:700; }
+        .message { text-align:center; padding:60px 20px; color:#64748b; background:white; border:1px solid #e5eaf1; border-radius:14px; }
+        .message h2 { color:#172033; margin-bottom:8px; }
+        @media(max-width:750px){ nav{padding:0 4%;} .brand-name{font-size:16px;} .container{width:92%;} .nav-btn{padding:9px 11px;} }
+    </style>
+</head>
+<body>
+    <div class="topbar">🎓 HIT Student Marketplace • Buy. Sell. Connect.</div>
+    <nav>
+        <a href="marketplace.html" class="brand">
+            <div class="brand-logo">HIT</div>
+            <div class="brand-name">HIT Marketplace</div>
+        </a>
+        <div class="nav-right">
+            <a href="marketplace.html" class="nav-btn">← Marketplace</a>
+            <a href="chats.html" class="nav-btn">💬 Chats</a>
+        </div>
+    </nav>
+
+    <main class="container">
+        <h1>❤️ Saved Items</h1>
+        <p class="subtitle">Items you saved for later.</p>
+        <div id="savedGrid">
+            <div class="message"><h2>Loading saved items...</h2><p>Please wait.</p></div>
+        </div>
+    </main>
+
+    <script>
+        const SUPABASE_URL = "https://ziyyqhnmhbwomibpsenf.supabase.co";
+        const SUPABASE_KEY = "sb_publishable_i25Oy3Rbnzr3S45H4KzQyg_dLeEd3YH";
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        let currentUserId = null;
+
+        async function init() {
+            const { data:{session}, error } = await supabaseClient.auth.getSession();
+            if (error || !session) { window.location.replace("login.html"); return; }
+            currentUserId = session.user.id;
+
+            const { data:profile, error:profileError } = await supabaseClient
+                .from("profiles").select("verification_status").eq("id", currentUserId).single();
+
+            if (profileError || !profile) { window.location.replace("login.html"); return; }
+            if (profile.verification_status !== "VERIFIED") {
+                if (profile.verification_status === "PENDING") window.location.replace("verify.html");
+                else { await supabaseClient.auth.signOut(); window.location.replace("login.html"); }
+                return;
+            }
+
+            await loadSaved();
+        }
+
+        async function loadSaved() {
+            const grid = document.getElementById("savedGrid");
+            const { data:savedRows, error } = await supabaseClient
+                .from("saved_items")
+                .select("id, listing_id, created_at")
+                .eq("user_id", currentUserId)
+                .order("created_at", {ascending:false});
+
+            if (error) {
+                grid.innerHTML = `<div class="message"><h2>Could not load saved items</h2><p>${escapeHtml(error.message)}</p></div>`;
+                return;
+            }
+
+            if (!savedRows || !savedRows.length) {
+                grid.innerHTML = `<div class="message"><h2>No saved items yet</h2><p>Go to Marketplace and tap ♡ on an item you want to save.</p></div>`;
+                return;
+            }
+
+            const ids = savedRows.map(row => row.listing_id);
+            const { data:listings, error:listingsError } = await supabaseClient
+                .from("listings").select("*").in("id", ids);
+
+            if (listingsError) {
+                grid.innerHTML = `<div class="message"><h2>Could not load listings</h2><p>${escapeHtml(listingsError.message)}</p></div>`;
+                return;
+            }
+
+            const byId = new Map((listings || []).map(item => [item.id, item]));
+            const ordered = savedRows.map(row => byId.get(row.listing_id)).filter(Boolean);
+
+            if (!ordered.length) {
+                grid.innerHTML = `<div class="message"><h2>No active saved items</h2><p>The saved listings may have been removed.</p></div>`;
+                return;
+            }
+
+            grid.innerHTML = ordered.map(product => {
+                const image = product.image_url
+                    ? `<img src="${escapeHtml(product.image_url)}" alt="${escapeHtml(product.title)}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"><div class="no-image" style="display:none;">Image unavailable</div>`
+                    : `<div class="no-image">No image</div>`;
+                const price = Number(product.price).toLocaleString("en-IN");
+                return `<article class="card" onclick="openProduct('${product.id}')">
+                    ${image}
+                    <div class="content">
+                        <span class="category">${escapeHtml(product.category || "Other")}</span>
+                        <div class="title">${escapeHtml(product.title)}</div>
+                        <div class="description">${escapeHtml(product.description || "No description provided.")}</div>
+                        <div class="price">₹${price}</div>
+                        <button class="remove" type="button" onclick="removeSaved(event, '${product.id}')">Remove from Saved</button>
+                    </div>
+                </article>`;
+            }).join("");
+        }
+
+        async function removeSaved(event, listingId) {
+            event.stopPropagation();
+            const { error } = await supabaseClient
+                .from("saved_items")
+                .delete()
+                .eq("user_id", currentUserId)
+                .eq("listing_id", listingId);
+            if (error) { alert("Could not remove saved item."); console.error(error); return; }
+            await loadSaved();
+        }
+
+        function openProduct(id) { window.location.href = "product.html?id=" + encodeURIComponent(id); }
+        function escapeHtml(value) {
+            return String(value ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");
+        }
+
+        init();
+    </script>
+</body>
+</html>
