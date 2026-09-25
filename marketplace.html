@@ -35,7 +35,7 @@
         /* NAVBAR */
 
         nav {
-            height: 70px;
+            min-height: 70px;
             background: white;
             border-bottom: 1px solid #e5eaf1;
 
@@ -43,7 +43,8 @@
             align-items: center;
             justify-content: space-between;
 
-            padding: 0 6%;
+            padding: 10px 6%;
+            gap: 15px;
         }
 
         .brand {
@@ -53,6 +54,7 @@
 
             text-decoration: none;
             color: #172033;
+            flex-shrink: 0;
         }
 
         .brand-logo {
@@ -79,7 +81,9 @@
         .nav-right {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
         }
 
         button,
@@ -108,15 +112,21 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
+
             min-width: 19px;
             height: 19px;
+
             padding: 0 5px;
             margin-left: 5px;
+
             border-radius: 999px;
+
             background: #dc2626;
             color: white;
+
             font-size: 10px;
             font-weight: 800;
+
             vertical-align: middle;
         }
 
@@ -128,6 +138,7 @@
             border-radius: 8px;
 
             font-weight: 700;
+            text-decoration: none;
         }
 
         .logout-btn {
@@ -198,10 +209,8 @@
 
         #productsGrid {
             display: grid;
-
             grid-template-columns:
                 repeat(auto-fill, minmax(260px, 1fr));
-
             gap: 22px;
         }
 
@@ -227,7 +236,6 @@
             height: 210px;
 
             object-fit: cover;
-
             background: #eef2f7;
         }
 
@@ -240,7 +248,6 @@
             justify-content: center;
 
             background: #eef2f7;
-
             color: #64748b;
             font-size: 14px;
         }
@@ -251,16 +258,23 @@
 
         .save-btn {
             position: absolute;
+
             top: 12px;
             right: 12px;
+
             width: 40px;
             height: 40px;
+
             border-radius: 50%;
+
             border: 1px solid #e5eaf1;
             background: white;
-            box-shadow: 0 3px 12px rgba(0,0,0,0.10);
+
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.10);
+
             font-size: 21px;
             cursor: pointer;
+
             z-index: 5;
         }
 
@@ -336,9 +350,7 @@
 
         .message {
             text-align: center;
-
             padding: 50px 20px;
-
             color: #64748b;
         }
 
@@ -353,10 +365,26 @@
 
         /* RESPONSIVE */
 
+        @media (max-width: 900px) {
+            nav {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .nav-right {
+                width: 100%;
+                justify-content: flex-start;
+            }
+
+            .search-box {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
         @media (max-width: 750px) {
 
             nav {
-                padding: 0 4%;
+                padding: 12px 4%;
             }
 
             .brand-name {
@@ -379,6 +407,36 @@
             .sell-btn,
             .logout-btn {
                 padding: 9px 11px;
+                font-size: 12px;
+            }
+
+            .heading h1 {
+                font-size: 27px;
+            }
+        }
+
+        @media (max-width: 480px) {
+
+            .brand-logo {
+                width: 36px;
+                height: 36px;
+                font-size: 12px;
+            }
+
+            .brand-name {
+                font-size: 14px;
+            }
+
+            .nav-right {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                width: 100%;
+            }
+
+            .nav-right a,
+            .nav-right button {
+                width: 100%;
+                text-align: center;
             }
         }
     </style>
@@ -417,27 +475,56 @@
                 📦 My Listings
             </a>
 
+
             <a href="chats.html" class="chat-btn">
+
                 💬 Chats
+
                 <span
                     id="chatBadge"
                     class="chat-badge"
-                    style="display:none;"
-                >0</span>
+                    style="display:none;">
+                    0
+                </span>
+
             </a>
+
 
             <a href="saved.html" class="chat-btn">
                 ❤️ Saved
             </a>
 
+
+            <!-- NOTIFICATIONS -->
+
+            <a
+                href="notifications.html"
+                class="chat-btn"
+                id="notificationNavButton">
+
+                🔔 Notifications
+
+                <span
+                    id="notificationBadge"
+                    class="chat-badge"
+                    style="display:none;">
+                    0
+                </span>
+
+            </a>
+
+
             <a href="sell.html" class="sell-btn">
                 + Sell Item
             </a>
 
+
             <button
                 class="logout-btn"
                 onclick="logout()">
+
                 Logout
+
             </button>
 
         </div>
@@ -470,8 +557,7 @@
                 type="text"
                 id="searchInput"
                 placeholder="Search items..."
-                oninput="filterProducts()"
-            >
+                oninput="filterProducts()">
 
 
             <select
@@ -498,12 +584,8 @@
                     Clothing
                 </option>
 
-                <option value="Stationery">
-                    Stationery
-                </option>
-
-                <option value="Others">
-                    Others
+                <option value="Other">
+                    Other
                 </option>
 
             </select>
@@ -517,12 +599,16 @@
                     Newest
                 </option>
 
+                <option value="oldest">
+                    Oldest
+                </option>
+
                 <option value="low">
-                    Price: Low → High
+                    Price: Low to High
                 </option>
 
                 <option value="high">
-                    Price: High → Low
+                    Price: High to Low
                 </option>
 
             </select>
@@ -530,14 +616,14 @@
         </div>
 
 
-        <!-- PRODUCTS -->
+        <!-- PRODUCT GRID -->
 
         <div id="productsGrid">
 
             <div class="message">
 
                 <h2>
-                    Loading marketplace...
+                    Loading products...
                 </h2>
 
                 <p>
@@ -553,412 +639,605 @@
 
     <script>
 
-        /* =========================
-           SUPABASE
-        ========================= */
+        /* ================================
+           SUPABASE CONFIGURATION
+        ================================= */
 
         const SUPABASE_URL =
             "https://ziyyqhnmhbwomibpsenf.supabase.co";
 
-        const SUPABASE_KEY =
+        const SUPABASE_ANON_KEY =
             "sb_publishable_i25Oy3Rbnzr3S45H4KzQyg_dLeEd3YH";
 
         const supabaseClient =
             supabase.createClient(
                 SUPABASE_URL,
-                SUPABASE_KEY
+                SUPABASE_ANON_KEY
             );
 
 
-        /* =========================
-           VARIABLES
-        ========================= */
+        /* ================================
+           GLOBAL VARIABLES
+        ================================= */
+
+        let currentUser = null;
 
         let allProducts = [];
-        let currentUserId = null;
-        let marketplaceChatChannel = null;
+
         let savedListingIds = new Set();
 
 
-        /* =========================
-           AUTHENTICATION
-        ========================= */
+        /* ================================
+           AUTH CHECK
+        ================================= */
 
         async function checkUser() {
 
             const {
-                data: { session },
+                data: {
+                    user
+                },
                 error
-            } =
-                await supabaseClient.auth.getSession();
+            } = await supabaseClient.auth.getUser();
 
 
-            if (error || !session) {
+            if (error || !user) {
 
-                window.location.replace(
-                    "login.html"
-                );
+                window.location.href =
+                    "login.html";
 
                 return null;
             }
 
 
-            /* Check verification */
+            currentUser = user;
 
-            const {
-                data: profile,
-                error: profileError
-            } =
-                await supabaseClient
-                    .from("profiles")
-                    .select("verification_status")
-                    .eq("id", session.user.id)
-                    .single();
-
-
-            if (
-                profileError ||
-                !profile
-            ) {
-
-                await supabaseClient.auth.signOut();
-
-                window.location.replace(
-                    "login.html"
-                );
-
-                return null;
-            }
-
-
-            if (
-                profile.verification_status !==
-                "VERIFIED"
-            ) {
-
-                if (
-                    profile.verification_status ===
-                    "PENDING"
-                ) {
-
-                    window.location.replace(
-                        "verify.html"
-                    );
-
-                } else {
-
-                    await supabaseClient.auth.signOut();
-
-                    alert(
-                        "Your account is not verified."
-                    );
-
-                    window.location.replace(
-                        "login.html"
-                    );
-                }
-
-                return null;
-            }
-
-
-            return session;
-
+            return user;
         }
 
 
-        /* =========================
-           CHAT UNREAD COUNT
-        ========================= */
+        /* ================================
+           LOAD NOTIFICATION COUNT
+        ================================= */
 
-        async function loadUnreadCount(userId) {
-
-            if (!userId) return;
+        async function loadNotificationCount(userId) {
 
             const {
                 count,
                 error
             } = await supabaseClient
-                .from("chats")
-                .select("id", {
-                    count: "exact",
-                    head: true
-                })
-                .or(
-                    "buyer_id.eq." +
-                    userId +
-                    ",seller_id.eq." +
-                    userId
+                .from("notifications")
+                .select(
+                    "id",
+                    {
+                        count: "exact",
+                        head: true
+                    }
                 )
-                .neq("sender_id", userId)
+                .eq("user_id", userId)
                 .eq("is_read", false);
 
+
             if (error) {
+
                 console.error(
-                    "Unread chat count error:",
+                    "Notification count error:",
                     error
                 );
+
                 return;
             }
 
+
             const badge =
-                document.getElementById("chatBadge");
+                document.getElementById(
+                    "notificationBadge"
+                );
+
 
             if (!badge) return;
 
-            const total = count || 0;
 
-            if (total > 0) {
+            if (count && count > 0) {
+
                 badge.textContent =
-                    total > 99 ? "99+" : total;
+                    count > 99 ? "99+" : count;
+
                 badge.style.display =
                     "inline-flex";
+
             } else {
+
                 badge.style.display =
                     "none";
             }
         }
 
 
-        function startMarketplaceChatRealtime() {
+        /* ================================
+           NOTIFICATION REALTIME
+        ================================= */
 
-            if (!currentUserId) return;
+        function startNotificationRealtime() {
 
-            if (marketplaceChatChannel) {
-                supabaseClient.removeChannel(
-                    marketplaceChatChannel
-                );
-            }
+            if (!currentUser) return;
 
-            marketplaceChatChannel =
-                supabaseClient
-                    .channel(
-                        "marketplace-chat-" +
-                        currentUserId
-                    )
-                    .on(
-                        "postgres_changes",
-                        {
-                            event: "INSERT",
-                            schema: "public",
-                            table: "chats"
-                        },
-                        function (payload) {
 
-                            const message =
-                                payload.new;
+            supabaseClient
+                .channel(
+                    "notification-badge-" +
+                    currentUser.id
+                )
+                .on(
+                    "postgres_changes",
+                    {
+                        event: "*",
+                        schema: "public",
+                        table: "notifications",
+                        filter:
+                            "user_id=eq." +
+                            currentUser.id
+                    },
+                    function () {
 
-                            if (
-                                message &&
-                                (
-                                    message.buyer_id === currentUserId ||
-                                    message.seller_id === currentUserId
-                                )
-                            ) {
-                                loadUnreadCount(
-                                    currentUserId
-                                );
-                            }
-                        }
-                    )
-                    .on(
-                        "postgres_changes",
-                        {
-                            event: "UPDATE",
-                            schema: "public",
-                            table: "chats"
-                        },
-                        function (payload) {
+                        loadNotificationCount(
+                            currentUser.id
+                        );
 
-                            const message =
-                                payload.new;
-
-                            if (
-                                message &&
-                                (
-                                    message.buyer_id === currentUserId ||
-                                    message.seller_id === currentUserId
-                                )
-                            ) {
-                                loadUnreadCount(
-                                    currentUserId
-                                );
-                            }
-                        }
-                    )
-                    .subscribe();
+                    }
+                )
+                .subscribe();
         }
 
 
-        /* =========================
-           LOAD SAVED ITEMS
-        ========================= */
+        /* ================================
+           LOAD CHAT UNREAD COUNT
+        ================================= */
 
-        async function loadSavedIds(userId) {
-
-            const { data, error } =
-                await supabaseClient
-                    .from("saved_items")
-                    .select("listing_id")
-                    .eq("user_id", userId);
-
-            if (error) {
-                console.error("Saved items error:", error);
-                savedListingIds = new Set();
-                return;
-            }
-
-            savedListingIds = new Set(
-                (data || []).map(row => row.listing_id)
-            );
-        }
-
-
-        async function toggleSaved(event, listingId) {
-
-            event.stopPropagation();
-
-            if (!currentUserId) return;
-
-            const button =
-                event.currentTarget;
-
-            const isSaved =
-                savedListingIds.has(listingId);
-
-            button.disabled = true;
-
-            if (isSaved) {
-
-                const { error } =
-                    await supabaseClient
-                        .from("saved_items")
-                        .delete()
-                        .eq("user_id", currentUserId)
-                        .eq("listing_id", listingId);
-
-                if (error) {
-                    console.error(error);
-                    alert("Could not remove saved item.");
-                    button.disabled = false;
-                    return;
-                }
-
-                savedListingIds.delete(listingId);
-                button.textContent = "♡";
-                button.classList.remove("saved");
-
-            } else {
-
-                const { error } =
-                    await supabaseClient
-                        .from("saved_items")
-                        .insert({
-                            user_id: currentUserId,
-                            listing_id: listingId
-                        });
-
-                if (error) {
-                    console.error(error);
-                    alert("Could not save this item.");
-                    button.disabled = false;
-                    return;
-                }
-
-                savedListingIds.add(listingId);
-                button.textContent = "♥";
-                button.classList.add("saved");
-            }
-
-            button.disabled = false;
-        }
-
-
-        /* =========================
-           LOAD PRODUCTS
-        ========================= */
-
-        async function loadProducts() {
-
-            const session =
-                await checkUser();
-
-            if (!session) {
-                return;
-            }
-
-            currentUserId = session.user.id;
-
-            await loadSavedIds(
-                currentUserId
-            );
-
-            await loadUnreadCount(
-                currentUserId
-            );
-
-            startMarketplaceChatRealtime();
-
+        async function loadChatUnreadCount(
+            userId
+        ) {
 
             const {
-                data,
+                count,
                 error
-            } =
-                await supabaseClient
-                    .from("listings")
-                    .select("*")
-                    .eq("status", "ACTIVE")
-                    .order(
-                        "created_at",
-                        {
-                            ascending: false
-                        }
-                    );
+            } = await supabaseClient
+                .from("chats")
+                .select(
+                    "id",
+                    {
+                        count: "exact",
+                        head: true
+                    }
+                )
+                .or(
+                    "buyer_id.eq." +
+                    userId +
+                    ",seller_id.eq." +
+                    userId
+                )
+                .eq(
+                    "is_read",
+                    false
+                )
+                .neq(
+                    "sender_id",
+                    userId
+                );
 
 
             if (error) {
 
                 console.error(
-                    "Listings error:",
+                    "Chat unread error:",
                     error
                 );
 
+                return;
+            }
+
+
+            const badge =
+                document.getElementById(
+                    "chatBadge"
+                );
+
+
+            if (!badge) return;
+
+
+            if (count && count > 0) {
+
+                badge.textContent =
+                    count > 99 ? "99+" : count;
+
+                badge.style.display =
+                    "inline-flex";
+
+            } else {
+
+                badge.style.display =
+                    "none";
+            }
+        }
+
+
+        /* ================================
+           CHAT REALTIME
+        ================================= */
+
+        function startChatRealtime() {
+
+            if (!currentUser) return;
+
+
+            supabaseClient
+                .channel(
+                    "chat-badge-" +
+                    currentUser.id
+                )
+                .on(
+                    "postgres_changes",
+                    {
+                        event: "INSERT",
+                        schema: "public",
+                        table: "chats"
+                    },
+                    function (payload) {
+
+                        const message =
+                            payload.new;
+
+
+                        if (
+                            message.sender_id !==
+                            currentUser.id
+                        ) {
+
+                            loadChatUnreadCount(
+                                currentUser.id
+                            );
+                        }
+
+                    }
+                )
+                .subscribe();
+        }
+
+
+        /* ================================
+           LOAD SAVED ITEMS
+        ================================= */
+
+        async function loadSavedItems(
+            userId
+        ) {
+
+            const {
+                data,
+                error
+            } = await supabaseClient
+                .from("saved_items")
+                .select("listing_id")
+                .eq(
+                    "user_id",
+                    userId
+                );
+
+
+            if (error) {
+
+                console.error(
+                    "Saved items error:",
+                    error
+                );
+
+                return;
+            }
+
+
+            savedListingIds =
+                new Set(
+                    (data || [])
+                        .map(
+                            item =>
+                                item.listing_id
+                        )
+                );
+        }
+
+
+        /* ================================
+           SAVE / UNSAVE ITEM
+        ================================= */
+
+        async function toggleSave(
+            event,
+            listingId
+        ) {
+
+            event.preventDefault();
+            event.stopPropagation();
+
+
+            if (!currentUser) {
+
+                alert(
+                    "Please login first."
+                );
+
+                return;
+            }
+
+
+            const button =
+                event.currentTarget;
+
+
+            const isSaved =
+                savedListingIds.has(
+                    listingId
+                );
+
+
+            if (isSaved) {
+
+                const {
+                    error
+                } = await supabaseClient
+                    .from("saved_items")
+                    .delete()
+                    .eq(
+                        "user_id",
+                        currentUser.id
+                    )
+                    .eq(
+                        "listing_id",
+                        listingId
+                    );
+
+
+                if (error) {
+
+                    alert(
+                        "Could not remove saved item."
+                    );
+
+                    console.error(error);
+
+                    return;
+                }
+
+
+                savedListingIds.delete(
+                    listingId
+                );
+
+
+                button.textContent = "♡";
+
+                button.classList.remove(
+                    "saved"
+                );
+
+            } else {
+
+                const {
+                    error
+                } = await supabaseClient
+                    .from("saved_items")
+                    .insert({
+
+                        user_id:
+                            currentUser.id,
+
+                        listing_id:
+                            listingId
+
+                    });
+
+
+                if (error) {
+
+                    alert(
+                        "Could not save item."
+                    );
+
+                    console.error(error);
+
+                    return;
+                }
+
+
+                savedListingIds.add(
+                    listingId
+                );
+
+
+                button.textContent = "♥";
+
+                button.classList.add(
+                    "saved"
+                );
+            }
+        }
+
+
+        /* ================================
+           LOAD PRODUCTS
+        ================================= */
+
+        async function loadProducts() {
+
+            const grid =
                 document.getElementById(
                     "productsGrid"
-                ).innerHTML = `
+                );
 
+
+            grid.innerHTML = `
+                <div class="message">
+                    <h2>Loading products...</h2>
+                    <p>Please wait.</p>
+                </div>
+            `;
+
+
+            const {
+                data,
+                error
+            } = await supabaseClient
+                .from("listings")
+                .select(`
+                    id,
+                    seller_id,
+                    title,
+                    description,
+                    category,
+                    price,
+                    image_url,
+                    status,
+                    created_at
+                `)
+                .eq(
+                    "status",
+                    "ACTIVE"
+                )
+                .order(
+                    "created_at",
+                    {
+                        ascending: false
+                    }
+                );
+
+
+            if (error) {
+
+                console.error(
+                    "Products error:",
+                    error
+                );
+
+
+                grid.innerHTML = `
                     <div class="message error">
-
-                        <h2>
-                            Could not load marketplace
-                        </h2>
-
+                        <h2>Could not load products</h2>
                         <p>
-                            ${escapeHtml(error.message)}
+                            ${escapeHtml(
+                                error.message
+                            )}
                         </p>
-
                     </div>
-
                 `;
 
                 return;
             }
 
 
-            allProducts = data || [];
+            allProducts =
+                data || [];
 
-            displayProducts(
+
+            if (
+                allProducts.length === 0
+            ) {
+
+                grid.innerHTML = `
+                    <div class="message">
+                        <h2>No products available</h2>
+                        <p>
+                            Be the first HIT student
+                            to sell something.
+                        </p>
+                    </div>
+                `;
+
+                return;
+            }
+
+
+            await loadSellerProfiles();
+
+            renderProducts(
                 allProducts
             );
-
         }
 
 
-        /* =========================
-           DISPLAY PRODUCTS
-        ========================= */
+        /* ================================
+           SELLER PROFILES
+        ================================= */
 
-        function displayProducts(
+        let sellerProfiles = {};
+
+
+        async function loadSellerProfiles() {
+
+            const sellerIds =
+                [
+                    ...new Set(
+                        allProducts.map(
+                            item =>
+                                item.seller_id
+                        )
+                    )
+                ];
+
+
+            if (
+                sellerIds.length === 0
+            ) return;
+
+
+            const {
+                data,
+                error
+            } = await supabaseClient
+                .from("profiles")
+                .select(`
+                    id,
+                    full_name,
+                    department,
+                    year,
+                    verification_status
+                `)
+                .in(
+                    "id",
+                    sellerIds
+                );
+
+
+            if (error) {
+
+                console.error(
+                    "Profile error:",
+                    error
+                );
+
+                return;
+            }
+
+
+            sellerProfiles = {};
+
+
+            (data || []).forEach(
+                profile => {
+
+                    sellerProfiles[
+                        profile.id
+                    ] = profile;
+
+                }
+            );
+        }
+
+
+        /* ================================
+           RENDER PRODUCTS
+        ================================= */
+
+        function renderProducts(
             products
         ) {
 
@@ -968,22 +1247,19 @@
                 );
 
 
-            if (!products.length) {
+            if (
+                !products ||
+                products.length === 0
+            ) {
 
                 grid.innerHTML = `
-
                     <div class="message">
-
-                        <h2>
-                            No items found
-                        </h2>
-
+                        <h2>No matching products</h2>
                         <p>
-                            There are currently no active listings.
+                            Try another search
+                            or category.
                         </p>
-
                     </div>
-
                 `;
 
                 return;
@@ -991,190 +1267,266 @@
 
 
             grid.innerHTML =
-                products.map(
-                    product => {
+                products
+                    .map(
+                        product =>
+                            createProductCard(
+                                product
+                            )
+                    )
+                    .join("");
+        }
 
-                        const image =
-                            product.image_url
+
+        /* ================================
+           PRODUCT CARD
+        ================================= */
+
+        function createProductCard(
+            product
+        ) {
+
+            const seller =
+                sellerProfiles[
+                    product.seller_id
+                ] || {};
+
+
+            const isSaved =
+                savedListingIds.has(
+                    product.id
+                );
+
+
+            const image =
+                product.image_url
+                    ? `
+                        <img
+                            class="product-image"
+                            src="${escapeHtml(
+                                product.image_url
+                            )}"
+                            alt="${escapeHtml(
+                                product.title
+                            )}"
+                            loading="lazy"
+                        >
+                    `
+                    : `
+                        <div class="no-image">
+                            📦 No Image
+                        </div>
+                    `;
+
+
+            const sellerName =
+                seller.full_name ||
+                "HIT Student";
+
+
+            const verified =
+                seller.verification_status ===
+                "VERIFIED";
+
+
+            const date =
+                product.created_at
+                    ? new Date(
+                        product.created_at
+                    ).toLocaleDateString(
+                        "en-IN"
+                    )
+                    : "";
+
+
+            return `
+
+                <div
+                    class="product-card"
+                    onclick="openProduct(
+                        '${product.id}'
+                    )"
+                >
+
+                    ${image}
+
+
+                    <button
+                        class="save-btn ${
+                            isSaved
+                                ? "saved"
+                                : ""
+                        }"
+                        onclick="
+                            toggleSave(
+                                event,
+                                '${product.id}'
+                            )
+                        "
+                    >
+                        ${
+                            isSaved
+                                ? "♥"
+                                : "♡"
+                        }
+                    </button>
+
+
+                    <div class="product-content">
+
+                        ${
+                            product.category
                                 ? `
-
-                                <img
-                                    class="product-image"
-                                    src="${escapeHtml(product.image_url)}"
-                                    alt="${escapeHtml(product.title)}"
-                                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
-                                >
-
-                                <div
-                                    class="no-image"
-                                    style="display:none;">
-                                    Image unavailable
-                                </div>
-
+                                    <span
+                                        class="product-category"
+                                    >
+                                        ${escapeHtml(
+                                            product.category
+                                        )}
+                                    </span>
                                 `
-                                : `
-
-                                <div class="no-image">
-                                    No image
-                                </div>
-
-                                `;
+                                : ""
+                        }
 
 
-                        const price =
-                            Number(
-                                product.price
+                        <div
+                            class="product-title"
+                        >
+                            ${escapeHtml(
+                                product.title
+                            )}
+                        </div>
+
+
+                        <div
+                            class="product-description"
+                        >
+                            ${escapeHtml(
+                                product.description ||
+                                "No description available."
+                            )}
+                        </div>
+
+
+                        <div
+                            class="product-price"
+                        >
+                            ₹${Number(
+                                product.price || 0
                             ).toLocaleString(
                                 "en-IN"
-                            );
+                            )}
+                        </div>
 
 
-                        const date =
-                            product.created_at
-                                ? new Date(
-                                    product.created_at
-                                ).toLocaleDateString(
-                                    "en-IN",
-                                    {
-                                        day: "numeric",
-                                        month: "short",
-                                        year: "numeric"
-                                    }
-                                )
-                                : "";
+                        <div class="seller">
+
+                            Seller:
+                            <strong>
+                                ${escapeHtml(
+                                    sellerName
+                                )}
+                            </strong>
 
 
-                        return `
-
-                            <article
-    class="product-card"
-    onclick="openProduct('${product.id}')"
-    style="cursor:pointer;"
->
-
-                                <button
-                                    class="save-btn ${savedListingIds.has(product.id) ? "saved" : ""}"
-                                    type="button"
-                                    onclick="toggleSaved(event, '${product.id}')"
-                                    aria-label="Save item"
-                                    title="${savedListingIds.has(product.id) ? "Remove from saved" : "Save item"}"
-                                >${savedListingIds.has(product.id) ? "♥" : "♡"}</button>
-
-                                ${image}
-
-
-                                <div class="product-content">
-
-                                    <span class="product-category">
-
-                                        ${escapeHtml(
-                                            product.category ||
-                                            "Other"
-                                        )}
-
-                                    </span>
-
-
-                                    <h2 class="product-title">
-
-                                        ${escapeHtml(
-                                            product.title
-                                        )}
-
-                                    </h2>
-
-
-                                    <p class="product-description">
-
-                                        ${escapeHtml(
-                                            product.description ||
-                                            "No description provided."
-                                        )}
-
-                                    </p>
-
-
-                                    <div class="product-price">
-
-                                        ₹${price}
-
-                                    </div>
-
-
-                                    <div class="seller">
-
-                                        👤 Verified HIT Student
-
-                                        <span class="verified">
+                            ${
+                                verified
+                                    ? `
+                                        <span
+                                            class="verified"
+                                        >
                                             ✓ Verified
                                         </span>
+                                    `
+                                    : ""
+                            }
 
 
-                                        ${
-                                            date
-                                                ? `
-                                                <div class="date">
-                                                    Posted ${date}
-                                                </div>
-                                                `
-                                                : ""
-                                        }
+                            ${
+                                seller.department
+                                    ? `
+                                        <div>
+                                            ${escapeHtml(
+                                                seller.department
+                                            )}
+                                            ${
+                                                seller.year
+                                                    ? " • " +
+                                                      escapeHtml(
+                                                          seller.year
+                                                      )
+                                                    : ""
+                                            }
+                                        </div>
+                                    `
+                                    : ""
+                            }
 
-                                    </div>
 
-                                </div>
+                            ${
+                                date
+                                    ? `
+                                        <div
+                                            class="date"
+                                        >
+                                            Posted:
+                                            ${date}
+                                        </div>
+                                    `
+                                    : ""
+                            }
 
-                            </article>
+                        </div>
 
-                        `;
+                    </div>
 
-                    }
-                ).join("");
-
+                </div>
+            `;
         }
 
 
-        /* =========================
-           OPEN PRODUCT DETAILS
-        ========================= */
+        /* ================================
+           OPEN PRODUCT
+        ================================= */
 
-        function openProduct(productId) {
+        function openProduct(
+            listingId
+        ) {
+
             window.location.href =
                 "product.html?id=" +
-                encodeURIComponent(productId);
+                encodeURIComponent(
+                    listingId
+                );
         }
 
 
-        /* =========================
-           SEARCH + FILTER
-        ========================= */
+        /* ================================
+           SEARCH / FILTER
+        ================================= */
 
         function filterProducts() {
 
             const search =
-                document
-                    .getElementById(
+                (
+                    document.getElementById(
                         "searchInput"
-                    )
-                    .value
+                    ).value || ""
+                )
                     .toLowerCase()
                     .trim();
 
 
             const category =
-                document
-                    .getElementById(
-                        "categoryFilter"
-                    )
-                    .value;
+                document.getElementById(
+                    "categoryFilter"
+                ).value;
 
 
             const sort =
-                document
-                    .getElementById(
-                        "sortFilter"
-                    )
-                    .value;
+                document.getElementById(
+                    "sortFilter"
+                ).value;
 
 
             let filtered =
@@ -1202,102 +1554,131 @@
 
                         const matchesSearch =
                             !search ||
-                            title.includes(search) ||
-                            description.includes(search);
+                            title.includes(
+                                search
+                            ) ||
+                            description.includes(
+                                search
+                            ) ||
+                            productCategory
+                                .toLowerCase()
+                                .includes(
+                                    search
+                                );
 
 
                         const matchesCategory =
                             !category ||
-                            productCategory === category;
+                            productCategory ===
+                                category;
 
 
                         return (
                             matchesSearch &&
                             matchesCategory
                         );
-
                     }
                 );
 
 
-            if (sort === "low") {
+            filtered.sort(
+                (a, b) => {
 
-                filtered.sort(
-                    (a, b) =>
-                        Number(a.price) -
-                        Number(b.price)
-                );
+                    if (
+                        sort === "oldest"
+                    ) {
 
-            }
-
-
-            if (sort === "high") {
-
-                filtered.sort(
-                    (a, b) =>
-                        Number(b.price) -
-                        Number(a.price)
-                );
-
-            }
+                        return new Date(
+                            a.created_at
+                        ) -
+                        new Date(
+                            b.created_at
+                        );
+                    }
 
 
-            if (sort === "newest") {
+                    if (
+                        sort === "low"
+                    ) {
 
-                filtered.sort(
-                    (a, b) =>
-                        new Date(b.created_at) -
-                        new Date(a.created_at)
-                );
+                        return Number(
+                            a.price || 0
+                        ) -
+                        Number(
+                            b.price || 0
+                        );
+                    }
 
-            }
+
+                    if (
+                        sort === "high"
+                    ) {
+
+                        return Number(
+                            b.price || 0
+                        ) -
+                        Number(
+                            a.price || 0
+                        );
+                    }
 
 
-            displayProducts(
-                filtered
+                    return new Date(
+                        b.created_at
+                    ) -
+                    new Date(
+                        a.created_at
+                    );
+                }
             );
 
+
+            renderProducts(
+                filtered
+            );
         }
 
 
-        /* =========================
+        /* ================================
            LOGOUT
-        ========================= */
+        ================================= */
 
         async function logout() {
 
             const {
                 error
-            } =
-                await supabaseClient.auth.signOut();
+            } = await supabaseClient
+                .auth
+                .signOut();
 
 
             if (error) {
 
                 alert(
-                    "Logout failed. Please try again."
+                    "Logout failed: " +
+                    error.message
                 );
-
-                console.error(error);
 
                 return;
             }
 
 
-            window.location.replace(
-                "login.html"
-            );
-
+            window.location.href =
+                "login.html";
         }
 
 
-        /* =========================
-           SECURITY / HTML ESCAPE
-        ========================= */
+        /* ================================
+           ESCAPE HTML
+        ================================= */
 
-        function escapeHtml(value) {
+        function escapeHtml(
+            value
+        ) {
 
-            return String(value ?? "")
+            return String(
+                value ?? ""
+            )
                 .replace(
                     /&/g,
                     "&amp;"
@@ -1318,15 +1699,47 @@
                     /'/g,
                     "&#039;"
                 );
-
         }
 
 
-        /* =========================
-           START
-        ========================= */
+        /* ================================
+           PAGE START
+        ================================= */
 
-        loadProducts();
+        async function startPage() {
+
+            const user =
+                await checkUser();
+
+
+            if (!user) return;
+
+
+            await loadSavedItems(
+                user.id
+            );
+
+
+            await loadProducts();
+
+
+            await loadChatUnreadCount(
+                user.id
+            );
+
+
+            await loadNotificationCount(
+                user.id
+            );
+
+
+            startChatRealtime();
+
+            startNotificationRealtime();
+        }
+
+
+        startPage();
 
     </script>
 
